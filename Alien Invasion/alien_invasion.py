@@ -1,4 +1,5 @@
 import pygame
+from pygame.sprite import Group
 from settings import Settings
 from ship import Ship
 from alien import Alien
@@ -17,10 +18,11 @@ def run_game():
     
     # Создание корабля и группы для хранения пуль
     ship = Ship(ai_settings, screen)
-    bullets = pygame.sprite.Group()
+    bullets = Group()
+    aliens = Group()
     
-    # Создание пришельца.
-    alien = Alien(ai_settings, screen)
+    # Создание флота пришельцев.
+    gf.create_fleet(ai_settings, screen, ship, aliens)
 
     # Запуск основного цикла игры
     while True:
@@ -31,6 +33,7 @@ def run_game():
         # Обновление позиций пуль
         gf.update_bullets(bullets)
         # Обновление изображений на экране
-        gf.update_screen(ai_settings, screen, ship, bullets, alien)
+        gf.update_screen(ai_settings, screen, ship, bullets, aliens)
+
 
 run_game() 
