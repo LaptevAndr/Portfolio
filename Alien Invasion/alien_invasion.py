@@ -1,7 +1,8 @@
 import pygame
 from settings import Settings
 from ship import Ship
-import game_functions as gf
+from alien import Alien
+import game_functions as gf 
 
 def run_game():
     """Инициализирует игру, настройки и создает экран.
@@ -18,6 +19,9 @@ def run_game():
     ship = Ship(ai_settings, screen)
     bullets = pygame.sprite.Group()
     
+    # Создание пришельца.
+    alien = Alien(ai_settings, screen)
+
     # Запуск основного цикла игры
     while True:
         # Отслеживание событий клавиатуры и мыши
@@ -27,6 +31,6 @@ def run_game():
         # Обновление позиций пуль
         gf.update_bullets(bullets)
         # Обновление изображений на экране
-        gf.update_screen(ai_settings, screen, ship, bullets)
+        gf.update_screen(ai_settings, screen, ship, bullets, alien)
 
 run_game() 
