@@ -30,3 +30,8 @@ class Bullet(Sprite):
     def draw_bullet(self):
         """Выводит пулю на экран."""
         pygame.draw.rect(self.screen, self.color, self.rect)
+    
+    def draw_button(self):
+        """Выводит кнопку на экран."""
+        self.screen.fill(self.button_color, self.rect)
+        self.screen.blit(self.msg_image, self.msg_image_rect)
