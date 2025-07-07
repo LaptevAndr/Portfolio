@@ -29,9 +29,9 @@ class Settings():
         self.speedup_scale = 1.1
         # Темп роста стоимости пришельцев
         self.score_scale = 1.5
-        self.initialize_dymanic_settings()
+        self.initialize_dynamic_settings()  # Исправлено название метода
 
-    def initialize_dymanic_settings(self):
+    def initialize_dynamic_settings(self):  # Исправлено название
         """Инициализирует настройки, зависящие от уровня."""
         self.ship_speed_factor = 1.5 
         self.bullet_speed_factor = 3

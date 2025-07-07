@@ -1,4 +1,5 @@
 import pygame
+import os
 from pygame.sprite import Sprite
 
 class Alien(Sprite):
@@ -10,7 +11,9 @@ class Alien(Sprite):
         self.ai_settings = ai_settings
 
         #Загрузка изображения пришельца и назначение атрибута rect
-        self.image = pygame.image.load('images/alien.bmp')
+        current_dir = os.path.dirname(__file__)
+        image_path = os.path.join(current_dir, 'images', 'alien.bmp')
+        self.image = pygame.image.load(image_path)
 
         self.rect = self.image.get_rect()
 

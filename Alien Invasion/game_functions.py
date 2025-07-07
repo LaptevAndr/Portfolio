@@ -70,7 +70,7 @@ def check_play_button(ai_settings, screen, stats, sb, play_button, ship, aliens,
         sb.prep_score()
         sb.prep_high_score()
         sb.prep_level()
-        sb.prep_ships()
+        sb.prep_hearts()
 
         # Очистка списков пришельцев и пуль.
         aliens.empty()
@@ -105,7 +105,7 @@ def check_bullet_alien_collisions(ai_settings, screen, stats, sb, ship, aliens, 
         for aliens in collisions.values():
             stats.score += ai_settings.alien_points * len(aliens)
             sb.prep_score()
-            check_high_score(stats, sb)
+        check_high_score(stats, sb)  # Перенесено после обновления счета
 
     if len(aliens) == 0:
         # уничтожение существующих пуль и создание нового флота 
@@ -200,7 +200,7 @@ def ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets):
     if stats.ships_left > 0:
         stats.ships_left -= 1
         # Обновление игровой информации.
-        sb.prep_ships()
+        sb.prep_hearts()
         # Очистка списков пришельцев и пуль.
         aliens.empty()
         bullets.empty()
