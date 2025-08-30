@@ -1,0 +1,229 @@
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Transaction, Category, SavingsGoal, Loan
+from .forms import TransactionForm, SavingsGoalForm, LoanForm
+from dateutil.relativedelta import relativedelta
+from django.utils.timezone import now
+from decimal import Decimal
+# Для графиков 
+import matplotlib.pyplot as plt
+import io
+import urllib
+import base64
+from django.db.models import Sum
+
+@login_required
+def transaction_list(request):
+    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
+    total_income = sum(t.amount for t in transactions if t.category.type == 'income')
+    total_expense = sum(t.amount for t in transactions if t.category.type == 'expense')
+    balance = total_income - total_expense
+    
+    # Получаем цели накопления
+    savings_goals = SavingsGoal.objects.filter(user=request.user)
+    total_savings_goal = sum(goal.target_amount for goal in savings_goals)
+    total_current_savings = sum(goal.current_amount for goal in savings_goals)
+    
+    # Получаем кредиты
+    loans = Loan.objects.filter(user=request.user)
+    total_debt = sum(loan.remaining_amount for loan in loans)
+    total_monthly_payments = sum(loan.monthly_payment for loan in loans)
+    
+    # Свободные деньги после обязательных платежей
+    free_money_after_expenses = balance - total_monthly_payments if balance else Decimal('0')
+    
+    # Расчет свободных денег после сбережений (примерный)
+    if total_savings_goal > 0:
+        monthly_savings_need = (total_savings_goal - total_current_savings) / Decimal('12')
+        free_money_after_savings = free_money_after_expenses - monthly_savings_need
+    else:
+        free_money_after_savings = free_money_after_expenses
+    
+    # Не допускаем отрицательные значения
+    free_money_after_savings = max(free_money_after_savings, Decimal('0'))
+
+    context = {
+        'transactions': transactions,
+        'total_income': total_income,
+        'total_expense': total_expense,
+        'balance': balance,
+        'savings_goals': savings_goals,
+        'loans': loans,
+        'total_savings_goal': total_savings_goal,
+        'total_current_savings': total_current_savings,
+        'total_debt': total_debt,
+        'total_monthly_payments': total_monthly_payments,
+        'free_money_after_expenses': free_money_after_expenses,
+        'free_money_after_savings': free_money_after_savings,
+    }
+    return render(request, 'budget/transaction_list.html', context)
+
+@login_required
+def add_transaction(request):
+    if request.method == 'POST':
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            new_transaction = form.save(commit=False)
+            new_transaction.user = request.user
+            new_transaction.save()
+            return redirect('budget:transaction_list')
+    else:
+        form = TransactionForm()
+
+    context = {'form': form}
+    return render(request, 'budget/transaction_form.html', context)
+
+@login_required
+def savings_goals(request):
+    goals = SavingsGoal.objects.filter(user=request.user)
+    return render(request, 'budget/savings_goals.html', {'goals': goals})
+
+@login_required
+def loans_list(request):
+    loans = Loan.objects.filter(user=request.user)
+    return render(request, 'budget/loans.html', {'loans': loans})
+
+@login_required
+def add_savings_goal(request):
+    if request.method == 'POST':
+        form = SavingsGoalForm(request.POST)
+        if form.is_valid():
+            new_goal = form.save(commit=False)
+            new_goal.user = request.user
+            new_goal.save()
+            return redirect('budget:savings_goals')
+    else:
+        form = SavingsGoalForm()
+
+    context = {'form': form}
+    return render(request, 'budget/savings_goal_form.html', context)
+
+@login_required
+def add_loan(request):
+    if request.method == 'POST':
+        form = LoanForm(request.POST)
+        if form.is_valid():
+            new_loan = form.save(commit=False)
+            new_loan.user = request.user
+            new_loan.save()
+            return redirect('budget:loans_list')
+    else:
+        form = LoanForm()
+
+    context = {'form': form}
+    return render(request, 'budget/loan_form.html', context)
+
+@login_required
+def edit_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = TransactionForm(request.POST, instance=transaction)
+        if form.is_valid():
+            form.save()
+            return redirect('budget:transaction_list')
+    else:
+        form = TransactionForm(instance=transaction)
+    
+    context = {'form': form, 'transaction': transaction}
+    return render(request, 'budget/transaction_form.html', context)
+
+@login_required
+def delete_transaction(request, pk):
+    transaction = get_object_or_404(Transaction, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        transaction.delete()
+        return redirect('budget:transaction_list')
+    else:
+        return render(request, 'budget/transaction_confirm_delete.html', {'transaction': transaction})
+
+@login_required
+def edit_savings_goal(request, pk):
+    goal = get_object_or_404(SavingsGoal, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = SavingsGoalForm(request.POST, instance=goal)
+        if form.is_valid():
+            form.save()
+            return redirect('budget:savings_goals')
+    else:
+        form = SavingsGoalForm(instance=goal)
+    
+    context = {'form': form, 'goal': goal}
+    return render(request, 'budget/savings_goal_form.html', context)
+
+@login_required
+def delete_savings_goal(request, pk):
+    goal = get_object_or_404(SavingsGoal, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        goal.delete()
+        return redirect('budget:savings_goals')
+    else:
+        return render(request, 'budget/savings_goal_confirm_delete.html', {'goal': goal})
+
+@login_required
+def edit_loan(request, pk):
+    loan = get_object_or_404(Loan, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        form = LoanForm(request.POST, instance=loan)
+        if form.is_valid():
+            form.save()
+            return redirect('budget:loans_list')
+    else:
+        form = LoanForm(instance=loan)
+    
+    context = {'form': form, 'loan': loan}
+    return render(request, 'budget/loan_form.html', context)
+
+@login_required
+def delete_loan(request, pk):
+    loan = get_object_or_404(Loan, id=pk, user=request.user)
+    
+    if request.method == 'POST':
+        loan.delete()
+        return redirect('budget:loans_list')
+    else:
+        return render(request, 'budget/loan_confirm_delete.html', {'loan': loan})
+    
+def expense_chart(request):
+    # Получаем данные из базы данных
+    expenses = (
+        Transaction.objects
+        .filter(user=request.user, category__type='expense')
+        .values('category__name')
+        .annotate(total=Sum('amount'))
+        .order_by('-total')
+    )
+    
+    # Подготовка данных для графика
+    categories = [item['category__name'] for item in expenses]
+    amounts = [float(item['total']) for item in expenses]
+    
+    # Создаем график
+    plt.figure(figsize=(10, 7))
+    plt.bar(categories, amounts, color=['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9A826', '#6A0572'])
+    plt.title('Расходы по категориям', fontsize=16, fontweight='bold')
+    plt.xlabel('Категории', fontsize=12)
+    plt.ylabel('Сумма (руб.)', fontsize=12)
+    plt.xticks(rotation=45)
+    plt.grid(axis='y', alpha=0.3)
+    
+    # Добавляем подписи значений на столбцах
+    for i, v in enumerate(amounts):
+        plt.text(i, v + max(amounts)*0.01, f'{v:.0f}', ha='center', va='bottom')
+    
+    # Конвертируем график в base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=100)
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    
+    graphic = base64.b64encode(image_png)
+    graphic = graphic.decode('utf-8')
+    plt.close()  # Важно: закрываем график
+    
+    return render(request, 'budget/expense_chart.html', {'chart_image': graphic})

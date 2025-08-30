@@ -1,0 +1,15 @@
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    # Подключаем встроенные URL-ы Django для аутентификации (логин/логаут)
+    path('accounts/', include('django.contrib.auth.urls')),
+    # Подключаем все URL-ы из приложения 'budget'.
+    path('', include('budget.urls')),# Префикс для всех URL-ов приложения - '' (т.е. они будут в корне сайта).
+]
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
