@@ -5,12 +5,6 @@ from .forms import TransactionForm, SavingsGoalForm, LoanForm
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 from decimal import Decimal
-# Для графиков 
-import matplotlib.pyplot as plt
-import io
-import urllib
-import base64
-from django.db.models import Sum
 
 @login_required
 def transaction_list(request):
@@ -188,42 +182,3 @@ def delete_loan(request, pk):
     else:
         return render(request, 'budget/loan_confirm_delete.html', {'loan': loan})
     
-def expense_chart(request):
-    # Получаем данные из базы данных
-    expenses = (
-        Transaction.objects
-        .filter(user=request.user, category__type='expense')
-        .values('category__name')
-        .annotate(total=Sum('amount'))
-        .order_by('-total')
-    )
-    
-    # Подготовка данных для графика
-    categories = [item['category__name'] for item in expenses]
-    amounts = [float(item['total']) for item in expenses]
-    
-    # Создаем график
-    plt.figure(figsize=(10, 7))
-    plt.bar(categories, amounts, color=['#FF6B6B', '#4ECDC4', '#45B7D1', '#F9A826', '#6A0572'])
-    plt.title('Расходы по категориям', fontsize=16, fontweight='bold')
-    plt.xlabel('Категории', fontsize=12)
-    plt.ylabel('Сумма (руб.)', fontsize=12)
-    plt.xticks(rotation=45)
-    plt.grid(axis='y', alpha=0.3)
-    
-    # Добавляем подписи значений на столбцах
-    for i, v in enumerate(amounts):
-        plt.text(i, v + max(amounts)*0.01, f'{v:.0f}', ha='center', va='bottom')
-    
-    # Конвертируем график в base64
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=100)
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
-    
-    graphic = base64.b64encode(image_png)
-    graphic = graphic.decode('utf-8')
-    plt.close()  # Важно: закрываем график
-    
-    return render(request, 'budget/expense_chart.html', {'chart_image': graphic})
