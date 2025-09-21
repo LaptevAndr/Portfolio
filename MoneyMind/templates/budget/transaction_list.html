@@ -6,12 +6,31 @@
 {% block content %}
 <h1 class="mb-4">Мой бюджет</h1>
 
-<!-- Статистика -->
+<!-- Статистика и график -->
 <div class="row mb-4">
+    <!-- График -->
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">Финансовая статистика</h5>
+            </div>
+            <div class="card-body p-0">
+                {% if chart_data %}
+                    <div id="finance-chart" style="width: 100%; height: 300px;"></div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-pie-chart display-4"></i>
+                        <p class="mt-2">Нет данных для графика</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
     <!-- Цифровая статистика -->
-    <div class="col-12">
+    <div class="col-md-6">
         <div class="row">
-            <div class="col-md-3 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card text-white bg-success">
                     <div class="card-header">Доходы</div>
                     <div class="card-body">
@@ -19,7 +38,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card text-white bg-danger">
                     <div class="card-header">Расходы</div>
                     <div class="card-body">
@@ -27,7 +46,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card text-white bg-primary">
                     <div class="card-header">Баланс</div>
                     <div class="card-body">
@@ -35,7 +54,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
+            <div class="col-md-6 mb-3">
                 <div class="card text-white bg-warning">
                     <div class="card-header">Свободные деньги</div>
                     <div class="card-body">
@@ -107,4 +126,89 @@
     <i class="bi bi-info-circle"></i> Пока нет операций. <a href="{% url 'budget:add_transaction' %}">Добавьте первую!</a>
 </div>
 {% endif %}
+
+<!-- Подключаем Plotly JS -->
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+{% if chart_data %}
+{{ chart_data|json_script:"chart-data" }}
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Безопасное получение данных
+    var chartElement = document.getElementById('chart-data');
+    
+    if (chartElement && chartElement.textContent) {
+        try {
+            var chartData = JSON.parse(chartElement.textContent);
+            
+            if (chartData && chartData.values && chartData.values.length > 0) {
+                // Создаем график
+                Plotly.newPlot('finance-chart', [{
+                    values: chartData.values,
+                    labels: chartData.labels,
+                    type: 'pie',
+                    marker: { 
+                        colors: chartData.colors 
+                    },
+                    textinfo: 'percent+label+value',
+                    textposition: 'inside',
+                    hovertemplate: '<b>%{label}</b><br>%{value:,.0f} руб.<br>%{percent}<extra></extra>',
+                    texttemplate: '%{label}<br>%{value:,.0f} руб.<br>(%{percent})'
+                }], {
+                    showlegend: false,
+                    height: 300,
+                    margin: {l: 0, r: 0, t: 0, b: 0},
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)'
+                });
+                
+                console.log('График успешно создан');
+            }
+        } catch (error) {
+            console.error('Ошибка создания графика:', error);
+        }
+    }
+});
+
+// Перерисовываем график при изменении размера окна
+window.addEventListener('resize', function() {
+    var chartDiv = document.getElementById('finance-chart');
+    if (chartDiv && typeof Plotly !== 'undefined') {
+        Plotly.Plots.resize(chartDiv);
+    }
+});
+</script>
+
+<style>
+#finance-chart {
+    width: 100% !important;
+    height: 300px !important;
+    min-height: 300px !important;
+}
+
+#finance-chart .js-plotly-plot {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    #finance-chart {
+        height: 250px !important;
+        min-height: 250px !important;
+    }
+}
+</style>
 {% endblock %}

@@ -5,42 +5,69 @@ from .forms import TransactionForm, SavingsGoalForm, LoanForm
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 from decimal import Decimal
+from django.db.models import Sum, Q
+import plotly.express as px
+import json
+
+def home(request):
+    """Главная страница приложения"""
+    # Если пользователь уже авторизован, перенаправляем его в приложение
+    # if request.user.is_authenticated:
+        # return redirect('budget:transaction_list')
+    
+    return render(request, 'budget/home.html')
 
 @login_required
 def transaction_list(request):
-    transactions = Transaction.objects.filter(user=request.user).order_by('-date')
-    total_income = sum(t.amount for t in transactions if t.category.type == 'income')
-    total_expense = sum(t.amount for t in transactions if t.category.type == 'expense')
-    balance = total_income - total_expense
+    # Оптимизируем запрос с помощью select_related
+    transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
     
+    # Используем агрегацию БД для расчета сумм (быстрее чем Python)
+    income_agg = transactions.filter(category__type='income').aggregate(total=Sum('amount'))
+    expense_agg = transactions.filter(category__type='expense').aggregate(total=Sum('amount'))
+    
+    total_income = income_agg['total'] or Decimal('0')
+    total_expense = expense_agg['total'] or Decimal('0')
+    balance = total_income - total_expense
+
+    # Создаем данные для графика (как Python dict, а не JSON)
+    chart_data = None
+    if total_income > 0 or total_expense > 0:
+        chart_data = {
+            'labels': ['Доходы', 'Расходы'],
+            'values': [float(total_income), float(total_expense)],
+            'colors': ['#28a745', '#dc3545']
+        }
+
     # Получаем цели накопления
     savings_goals = SavingsGoal.objects.filter(user=request.user)
-    total_savings_goal = sum(goal.target_amount for goal in savings_goals)
-    total_current_savings = sum(goal.current_amount for goal in savings_goals)
+    total_savings_goal = sum(goal.target_amount for goal in savings_goals) or Decimal('0')
+    total_current_savings = sum(goal.current_amount for goal in savings_goals) or Decimal('0')
     
     # Получаем кредиты
     loans = Loan.objects.filter(user=request.user)
-    total_debt = sum(loan.remaining_amount for loan in loans)
-    total_monthly_payments = sum(loan.monthly_payment for loan in loans)
+    total_debt = sum(loan.remaining_amount for loan in loans) or Decimal('0')
+    total_monthly_payments = sum(loan.monthly_payment for loan in loans) or Decimal('0')
     
     # Свободные деньги после обязательных платежей
-    free_money_after_expenses = balance - total_monthly_payments if balance else Decimal('0')
+    free_money_after_expenses = balance - total_monthly_payments
     
-    # Расчет свободных денег после сбережений (примерный)
-    if total_savings_goal > 0:
+    # Расчет свободных денег после сбережений
+    free_money_after_savings = free_money_after_expenses
+    if total_savings_goal > 0 and total_savings_goal > total_current_savings:
         monthly_savings_need = (total_savings_goal - total_current_savings) / Decimal('12')
         free_money_after_savings = free_money_after_expenses - monthly_savings_need
-    else:
-        free_money_after_savings = free_money_after_expenses
     
     # Не допускаем отрицательные значения
     free_money_after_savings = max(free_money_after_savings, Decimal('0'))
+    free_money_after_expenses = max(free_money_after_expenses, Decimal('0'))
 
     context = {
         'transactions': transactions,
         'total_income': total_income,
         'total_expense': total_expense,
         'balance': balance,
+        'chart_data': chart_data,  # ← ВАЖНО! Передаем как Python dict, а не JSON
         'savings_goals': savings_goals,
         'loans': loans,
         'total_savings_goal': total_savings_goal,
@@ -52,6 +79,7 @@ def transaction_list(request):
     }
     return render(request, 'budget/transaction_list.html', context)
 
+# Остальные функции остаются без изменений
 @login_required
 def add_transaction(request):
     if request.method == 'POST':
@@ -181,4 +209,3 @@ def delete_loan(request, pk):
         return redirect('budget:loans_list')
     else:
         return render(request, 'budget/loan_confirm_delete.html', {'loan': loan})
-    
