@@ -12,6 +12,6 @@ class LoanAdmin(admin.ModelAdmin):
     list_display = ['name', 'user', 'loan_type', 'total_amount', 'remaining_amount', 'monthly_payment']
     list_filter = ['loan_type']
 
-# Регистрируем модели для отображения в админ-панели
+# Регистрация модели для отображения в админ-панели
 admin.site.register(Category)
 admin.site.register(Transaction)

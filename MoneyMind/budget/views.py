@@ -8,6 +8,9 @@ from decimal import Decimal
 from django.db.models import Sum, Q
 import plotly.express as px
 import json
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 def home(request):
     """Главная страница приложения"""
@@ -17,12 +20,27 @@ def home(request):
     
     return render(request, 'budget/home.html')
 
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Регистрация прошла успешно!')
+            return redirect('budget:transaction_list')
+        else:
+            messages.error(request, 'Исправьте ошибки в форме.')
+    else:
+        form = UserCreationForm()
+    
+    return render(request, 'registration/register.html', {'form': form})
+
 @login_required
 def transaction_list(request):
     # Оптимизируем запрос с помощью select_related
     transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
     
-    # Используем агрегацию БД для расчета сумм (быстрее чем Python)
+    # Используем агрегацию БД для расчета сумм
     income_agg = transactions.filter(category__type='income').aggregate(total=Sum('amount'))
     expense_agg = transactions.filter(category__type='expense').aggregate(total=Sum('amount'))
     
@@ -67,7 +85,7 @@ def transaction_list(request):
         'total_income': total_income,
         'total_expense': total_expense,
         'balance': balance,
-        'chart_data': chart_data,  # ← ВАЖНО! Передаем как Python dict, а не JSON
+        'chart_data': chart_data,
         'savings_goals': savings_goals,
         'loans': loans,
         'total_savings_goal': total_savings_goal,
@@ -79,7 +97,6 @@ def transaction_list(request):
     }
     return render(request, 'budget/transaction_list.html', context)
 
-# Остальные функции остаются без изменений
 @login_required
 def add_transaction(request):
     if request.method == 'POST':

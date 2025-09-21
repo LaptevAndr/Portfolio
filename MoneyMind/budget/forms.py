@@ -4,8 +4,8 @@ from .models import Transaction, SavingsGoal, Loan
 
 class TransactionForm(forms.ModelForm):
     date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date'}),  # Используем HTML5 input типа 'date'
-        label='Дата'  # Меняем label на русский
+        widget=forms.DateInput(attrs={'type': 'date'}), 
+        label='Дата'
     )
 
     class Meta:

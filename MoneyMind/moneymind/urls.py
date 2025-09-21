@@ -8,7 +8,7 @@ urlpatterns = [
     # Подключаем встроенные URL-ы Django для аутентификации (логин/логаут)
     path('accounts/', include('django.contrib.auth.urls')),
     # Подключаем все URL-ы из приложения 'budget'.
-    path('', include('budget.urls')),# Префикс для всех URL-ов приложения - '' (т.е. они будут в корне сайта).
+    path('', include('budget.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

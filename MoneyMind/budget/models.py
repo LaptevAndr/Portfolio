@@ -1,12 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User # Модель пользователя
+from django.contrib.auth.models import User
 from decimal import Decimal
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 
 # Модель для категорий доходов/расходов (Еда, Транспорт, Зарплата)
 class Category(models.Model):
-    name = models.CharField(max_length=100) # Поле для названия, макс. длина 100 символов
+    name = models.CharField(max_length=100)
     # Тип категории: либо доход ('income'), либо расход ('expense')
     TYPE_CHOICES = (
         ('income', 'Доход'),

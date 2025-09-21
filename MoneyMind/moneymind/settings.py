@@ -1,23 +1,15 @@
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-@5t%ka$9m=tx=_%_c0jjq)v-a160hz0qq%$k=@&=fd6fas60oe'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -121,11 +113,9 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Перенаправление после УСПЕШНОГО входа
-LOGIN_REDIRECT_URL = '/'  # Перенаправит на главную страницу ('' у нас ведет на список транзакций)
+LOGIN_REDIRECT_URL = '/'  # Перенаправит на главную страницу 
 
-# Перенаправление для доступа к ЗАЩИЩЕННЫМ страницам без авторизации
-LOGIN_URL = 'login'  # 'login' - это имя URL, которое Django создает автоматически для accounts/login/
+LOGIN_URL = 'login'
 
-# Настройки медиа файлов (для загрузок пользователей)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
