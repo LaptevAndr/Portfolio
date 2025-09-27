@@ -4,6 +4,29 @@
 {% block title %}MoneyMind - Ваш личный финансовый помощник{% endblock %}
 
 {% block content %}
+<!-- Хедер с кнопками навигации -->
+<header class="fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 0; z-index: 1030; border-bottom: 1px solid rgba(0,0,0,0.1);">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="logo fw-bold fs-3 text-dark">
+                <a href="{% url 'budget:home' %}" class="text-dark text-decoration-none">Money<span style="color: #8B5CF6;">Mind</span></a>
+            </div>
+            <div class="auth-buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-purple btn-sm me-2">Дашборд</a>
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-gradient-purple btn-sm">Выйти</button>
+</form>
+                {% else %}
+                    <a href="{% url 'budget:login' %}" class="btn btn-outline-purple btn-sm me-2">Войти</a>
+                    <a href="{% url 'budget:register' %}" class="btn btn-gradient-purple btn-sm">Регистрация</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</header>
+
 <!-- Главная секция -->
 <section class="hero-section min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative; overflow: hidden;">
     <div class="centered-container">
@@ -22,10 +45,10 @@
                         <i class="bi bi-graph-up me-2"></i>Перейти в дашборд
                     </a>
                     {% else %}
-                    <a href="{% url 'register' %}" class="btn btn-gradient-purple btn-lg rounded-xl px-4 py-3 me-3">
+                    <a href="{% url 'budget:register' %}" class="btn btn-gradient-purple btn-lg rounded-xl px-4 py-3 me-3">
                         <i class="bi bi-person-plus me-2"></i>Зарегистрироваться
                     </a>
-                    <a href="{% url 'login' %}" class="btn btn-outline-purple btn-lg rounded-xl px-4 py-3">
+                    <a href="{% url 'budget:login' %}" class="btn btn-outline-purple btn-lg rounded-xl px-4 py-3">
                         <i class="bi bi-box-arrow-in-right me-2"></i>Войти
                     </a>
                     {% endif %}
@@ -33,7 +56,7 @@
             </div>
             <div class="col-lg-6 text-center animate-float">
                 <div class="hero-image position-relative">
-                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 1500px;">
+                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 500px;">
                     <div class="floating-element-1"></div>
                     <div class="floating-element-2"></div>
                     <div class="floating-element-3"></div>
@@ -309,10 +332,10 @@
                     <i class="bi bi-graph-up me-2"></i>Перейти к дашборду
                 </a>
                 {% else %}
-                <a href="{% url 'register' %}" class="btn btn-gradient-purple btn-lg rounded-xl px-5 py-3 me-3">
+                <a href="{% url 'budget:register' %}" class="btn btn-gradient-purple btn-lg rounded-xl px-5 py-3 me-3">
                     <i class="bi bi-person-plus me-2"></i>Начать бесплатно
                 </a>
-                <a href="{% url 'login' %}" class="btn btn-outline-purple btn-lg rounded-xl px-5 py-3">
+                <a href="{% url 'budget:login' %}" class="btn btn-outline-purple btn-lg rounded-xl px-5 py-3">
                     <i class="bi bi-box-arrow-in-right me-2"></i>Войти в аккаунт
                 </a>
                 {% endif %}
@@ -434,7 +457,39 @@
 </section>
 
 <style>
-/* Переменные для цветовой схемы */
+.btn-gradient-purple {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-gradient-purple:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.3);
+    color: white;
+}
+
+.btn-outline-purple {
+    border: 2px solid #8B5CF6;
+    color: #8B5CF6;
+    background: transparent;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.btn-outline-purple:hover {
+    background: #8B5CF6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2);
+}
+
 :root {
     --purple-primary: #8B5CF6;
     --purple-light: #A78BFA;
@@ -465,36 +520,6 @@
     height: 200%;
     background: radial-gradient(circle, var(--purple-soft) 0%, transparent 70%);
     opacity: 0.6;
-}
-
-/* Buttons */
-.btn-gradient-purple {
-    background: var(--gradient-purple);
-    color: white;
-    border: none;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-gradient-purple:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.3);
-    color: white;
-}
-
-.btn-outline-purple {
-    border: 2px solid var(--purple-primary);
-    color: var(--purple-primary);
-    background: transparent;
-    transition: all 0.3s ease;
-}
-
-.btn-outline-purple:hover {
-    background: var(--purple-primary);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(139, 92, 246, 0.2);
 }
 
 /* Цвета фона */
@@ -707,6 +732,22 @@
     .btn.me-3 {
         margin-right: 0 !important;
     }
+    
+    /* Адаптация для хедера на мобильных */
+    header {
+        padding: 10px 0;
+    }
+    
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .auth-buttons .btn {
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
 }
 </style>
 
@@ -733,7 +774,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 count += increment;
                 let displayValue = Math.ceil(count);
                 
-                // Добавляем соответствующий символ
                 if (isPercentage) {
                     counter.innerText = displayValue + '%';
                 } else if (isPlus) {

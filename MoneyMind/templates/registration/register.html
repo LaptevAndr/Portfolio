@@ -14,55 +14,89 @@
                         <p class="text-muted mt-2">Создайте свой аккаунт</p>
                     </div>
                     <div class="card-body p-4">
-                        <form method="post" action="{% url 'register' %}">
+                        
+                        <!-- Блок для отображения сообщений -->
+                        {% if messages %}
+                        <div class="messages mb-3">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <form method="post" action="{% url 'budget:register' %}">
                             {% csrf_token %}
+                            
+                            <!-- Показываем ошибки формы -->
+                            {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Ошибки в форме:</strong>
+                                <ul class="mb-0">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                    <li>{{ field }}: {{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
                             
                             <div class="row">
                                 <!-- Имя -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="first_name" class="form-label">Имя</label>
+                                    <label for="id_first_name" class="form-label">Имя *</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-transparent">
                                             <i class="bi bi-person"></i>
                                         </span>
-                                        <input type="text" class="form-control" id="first_name" name="first_name" 
-                                               placeholder="Ваше имя" required>
+                                        <input type="text" class="form-control" id="id_first_name" name="first_name" 
+                                               value="{{ form.first_name.value|default:'' }}" placeholder="Ваше имя" required>
                                     </div>
                                 </div>
                                 
                                 <!-- Фамилия -->
                                 <div class="col-md-6 mb-3">
-                                    <label for="last_name" class="form-label">Фамилия</label>
+                                    <label for="id_last_name" class="form-label">Фамилия *</label>
                                     <div class="input-group">
                                         <span class="input-group-text bg-transparent">
                                             <i class="bi bi-person"></i>
                                         </span>
-                                        <input type="text" class="form-control" id="last_name" name="last_name" 
-                                               placeholder="Ваша фамилия">
+                                        <input type="text" class="form-control" id="id_last_name" name="last_name" 
+                                               value="{{ form.last_name.value|default:'' }}" placeholder="Ваша фамилия" required>
                                     </div>
                                 </div>
                             </div>
                             
                             <!-- Email -->
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                                <label for="id_email" class="form-label">Email *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-transparent">
                                         <i class="bi bi-envelope"></i>
                                     </span>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           placeholder="example@mail.com" required>
+                                    <input type="email" class="form-control" id="id_email" name="email" 
+                                           value="{{ form.email.value|default:'' }}" placeholder="example@mail.com" required>
                                 </div>
+                            </div>
+                            
+                            <!-- Username (скрытое поле, автоматически заполняется из email) -->
+                            <div class="mb-3" style="display: none;">
+                                <label for="id_username" class="form-label">Логин</label>
+                                <input type="text" class="form-control" id="id_username" name="username" 
+                                       value="{{ form.email.value|default:'' }}">
                             </div>
                             
                             <!-- Пароль -->
                             <div class="mb-3">
-                                <label for="password1" class="form-label">Пароль</label>
+                                <label for="id_password1" class="form-label">Пароль *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-transparent">
                                         <i class="bi bi-lock"></i>
                                     </span>
-                                    <input type="password" class="form-control" id="password1" name="password1" 
+                                    <input type="password" class="form-control" id="id_password1" name="password1" 
                                            placeholder="Создайте пароль" required>
                                 </div>
                                 <div class="form-text">
@@ -72,19 +106,19 @@
                             
                             <!-- Подтверждение пароля -->
                             <div class="mb-4">
-                                <label for="password2" class="form-label">Подтверждение пароля</label>
+                                <label for="id_password2" class="form-label">Подтверждение пароля *</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-transparent">
                                         <i class="bi bi-lock-fill"></i>
                                     </span>
-                                    <input type="password" class="form-control" id="password2" name="password2" 
+                                    <input type="password" class="form-control" id="id_password2" name="password2" 
                                            placeholder="Повторите пароль" required>
                                 </div>
                             </div>
                             
                             <!-- Чекбокс согласия -->
                             <div class="form-check mb-4">
-                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
                                 <label class="form-check-label" for="terms">
                                     Я соглашаюсь с <a href="#" class="text-decoration-none">условиями использования</a> 
                                     и <a href="#" class="text-decoration-none">политикой конфиденциальности</a>
@@ -106,7 +140,7 @@
                             <!-- Ссылка на вход -->
                             <div class="text-center">
                                 <p class="mb-0">Уже зарегистрированы? 
-                                    <a href="{% url 'login' %}" class="text-decoration-none fw-semibold">Войти</a>
+                                    <a href="{% url 'budget:login' %}" class="text-decoration-none fw-semibold">Войти</a>
                                 </p>
                             </div>
                         </form>
@@ -116,6 +150,25 @@
         </div>
     </div>
 </div>
+
+<!-- JavaScript для автоматического заполнения username из email -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const emailField = document.getElementById('id_email');
+    const usernameField = document.getElementById('id_username');
+    
+    if (emailField && usernameField) {
+        emailField.addEventListener('input', function() {
+            usernameField.value = emailField.value;
+        });
+        
+        // Также заполняем при загрузке, если email уже есть
+        if (emailField.value) {
+            usernameField.value = emailField.value;
+        }
+    }
+});
+</script>
 
 <style>
     .auth-container {
@@ -175,6 +228,11 @@
     .form-check-input:checked {
         background-color: #8B5CF6;
         border-color: #8B5CF6;
+    }
+    
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
     }
 </style>
 {% endblock %}

@@ -11,6 +11,9 @@ import json
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from .forms import CustomUserCreationForm 
+
+
 
 def home(request):
     """Главная страница приложения"""
@@ -22,25 +25,25 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, 'Регистрация прошла успешно!')
+            messages.success(request, 'Регистрация успешна!')
             return redirect('budget:transaction_list')
         else:
-            messages.error(request, 'Исправьте ошибки в форме.')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     
     return render(request, 'registration/register.html', {'form': form})
 
 @login_required
 def transaction_list(request):
-    # Оптимизируем запрос с помощью select_related
     transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
     
-    # Используем агрегацию БД для расчета сумм
     income_agg = transactions.filter(category__type='income').aggregate(total=Sum('amount'))
     expense_agg = transactions.filter(category__type='expense').aggregate(total=Sum('amount'))
     
@@ -48,7 +51,7 @@ def transaction_list(request):
     total_expense = expense_agg['total'] or Decimal('0')
     balance = total_income - total_expense
 
-    # Создаем данные для графика (как Python dict, а не JSON)
+    # данные для графика
     chart_data = None
     if total_income > 0 or total_expense > 0:
         chart_data = {

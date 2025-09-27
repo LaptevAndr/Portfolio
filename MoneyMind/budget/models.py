@@ -14,14 +14,14 @@ class Category(models.Model):
     )
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
 
-    # Метод для красивого отображения объекта в админке и shell
+    # Метод для красивого отображения объекта в админке
     def __str__(self):
-        return f"{self.name} ({self.get_type_display()})" # get_type_display() красивво покажет 'Доход' вместо 'income'
+        return f"{self.name} ({self.get_type_display()})" 
 
 # Главная модель — транзакция (любой доход или расход)
 class Transaction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) # Связь с пользователем. Если user удалится, все его транзакции тоже удалятся (CASCADE)
-    amount = models.DecimalField(max_digits=10, decimal_places=2) # Сумма. 10 цифр всего, 2 из них — после запятой (рубли, копейки)
+    amount = models.DecimalField(max_digits=10, decimal_places=2) # Сумма. 10 цифр всего
     category = models.ForeignKey(Category, on_delete=models.CASCADE) # Связь с категорией
     date = models.DateField() # Дата операции
     description = models.TextField(blank=True) # Описание, может быть пустым

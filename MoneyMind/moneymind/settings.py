@@ -1,15 +1,15 @@
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-@5t%ka$9m=tx=_%_c0jjq)v-a160hz0qq%$k=@&=fd6fas60oe'
+load_dotenv()
 
-DEBUG = True
+SECRET_KEY = os.environ['SECRET_KEY']
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
-
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -70,16 +70,10 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'OPTIONS': {
+            'min_length': 4,
+        }
     },
 ]
 
@@ -113,9 +107,13 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Перенаправление после УСПЕШНОГО входа
-LOGIN_REDIRECT_URL = '/'  # Перенаправит на главную страницу 
-
-LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/budget/dashboard/'  # После входа
+LOGOUT_REDIRECT_URL = '/'  # После выхода  
+LOGIN_URL = '/login/'  # Для @login_required
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
