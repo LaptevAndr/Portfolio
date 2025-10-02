@@ -3,36 +3,64 @@
 {% block title %}Удаление операции - MoneyMind{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body text-center">
-                <h3 class="card-title text-danger mb-4">
-                    <i class="bi bi-exclamation-triangle"></i> Удаление операции
-                </h3>
-                
-                <p>Вы уверены, что хотите удалить эту операцию?</p>
-                
-                <div class="alert alert-info">
-                    <strong>{{ transaction.date }}</strong> - 
-                    {{ transaction.category.name }}: 
-                    <strong>{{ transaction.amount }} руб.</strong>
-                    {% if transaction.description %}
-                    <br>"{{ transaction.description }}"
-                    {% endif %}
-                </div>
+<div class="mb-3">
+    <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Назад к дашборду
+    </a>
+</div>
+    <div class="dashboard-theme">
+        <div class="container-fluid py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-5 col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-danger">
+                            <h5 class="card-title mb-0 text-white">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Удаление операции
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="mb-4">
+                                <i class="bi bi-trash display-1 text-danger opacity-50"></i>
+                            </div>
+                            
+                            <h4 class="fw-bold text-dark mb-3">Вы уверены?</h4>
+                            <p class="text-muted mb-4">Эта операция будет удалена безвозвратно</p>
+                            
+                            <div class="alert alert-light border">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-calendar text-primary me-2"></i>
+                                    <strong>{{ transaction.date|date:"d.m.Y" }}</strong>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-tag text-primary me-2"></i>
+                                    {{ transaction.category.name }}
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-currency-ruble text-primary me-2"></i>
+                                    <span class="fw-bold {% if transaction.category.type == 'income' %}text-success{% else %}text-danger{% endif %}">
+                                        {{ transaction.amount }} ₽
+                                    </span>
+                                </div>
+                                {% if transaction.description %}
+                                <div class="mt-2 text-muted">
+                                    "{{ transaction.description }}"
+                                </div>
+                                {% endif %}
+                            </div>
 
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Да, удалить
-                    </button>
-                    <a href="{% url 'budget:transaction_list' %}" class="btn btn-secondary">
-                        <i class="bi bi-x-circle"></i> Отмена
-                    </a>
-                </form>
+                            <form method="post" class="d-flex gap-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger flex-fill">
+                                    <i class="bi bi-trash me-2"></i>Да, удалить
+                                </button>
+                                <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-2"></i>Отмена
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

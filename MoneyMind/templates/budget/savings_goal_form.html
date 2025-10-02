@@ -1,59 +1,417 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Добавить цель накопления - MoneyMind{% endblock %}
+{% block title %}{% if goal %}Редактировать{% else %}Добавить{% endif %} цель - MoneyMind{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h1 class="mb-4">Добавить цель накопления</h1>
+<div class="dashboard-theme">
+    <div class="container-fluid py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <!-- Кнопка назад -->
+                <div class="mb-4">
+                    <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="bi bi-arrow-left me-2"></i>Назад к дашборду
+                    </a>
+                </div>
 
-        <form method="post">
-            {% csrf_token %}
-            
-            <div class="card">
-                <div class="card-body">
-                    {% for field in form %}
-                    <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label">
-                            {{ field.label }}
-                            {% if field.field.required %}*{% endif %}
-                        </label>
-                        {{ field }}
-                        {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text }}</div>
-                        {% endif %}
-                        {% if field.errors %}
-                        <div class="text-danger">{{ field.errors }}</div>
-                        {% endif %}
+                <!-- Основная карточка формы -->
+                <div class="card shadow-soft">
+                    <div class="card-header bg-gradient-purple text-white">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-{% if goal %}pencil{% else %}bullseye{% endif %} display-6 me-3"></i>
+                            <div>
+                                <h4 class="card-title mb-1">
+                                    {% if goal %}Редактировать цель{% else %}Новая цель накопления{% endif %}
+                                </h4>
+                                <p class="text-white-50 mb-0">Постановка и отслеживание финансовых целей</p>
+                            </div>
+                        </div>
                     </div>
-                    {% endfor %}
+                    <div class="card-body p-4">
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <!-- Название цели -->
+                            <div class="mb-4">
+                                <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold text-dark mb-3">
+                                    <i class="bi bi-pencil text-primary me-2"></i>
+                                    {{ form.name.label }}
+                                    {% if form.name.field.required %}<span class="text-danger">*</span>{% endif %}
+                                </label>
+                                {{ form.name }}
+                                {% if form.name.help_text %}
+                                <div class="form-text text-muted mt-2">
+                                    <i class="bi bi-info-circle me-1"></i>{{ form.name.help_text }}
+                                </div>
+                                {% endif %}
+                                {% if form.name.errors %}
+                                <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="row">
+                                <!-- Целевая сумма -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="{{ form.target_amount.id_for_label }}" class="form-label fw-semibold text-dark mb-3">
+                                        <i class="bi bi-currency-dollar text-success me-2"></i>
+                                        {{ form.target_amount.label }}
+                                        {% if form.target_amount.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.target_amount }}
+                                    {% if form.target_amount.help_text %}
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>{{ form.target_amount.help_text }}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.target_amount.errors %}
+                                    <div class="text-danger small mt-1">{{ form.target_amount.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Текущая сумма -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="{{ form.current_amount.id_for_label }}" class="form-label fw-semibold text-dark mb-3">
+                                        <i class="bi bi-wallet2 text-info me-2"></i>
+                                        {{ form.current_amount.label }}
+                                        {% if form.current_amount.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.current_amount }}
+                                    {% if form.current_amount.help_text %}
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>{{ form.current_amount.help_text }}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.current_amount.errors %}
+                                    <div class="text-danger small mt-1">{{ form.current_amount.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <!-- Срок достижения -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="{{ form.deadline.id_for_label }}" class="form-label fw-semibold text-dark mb-3">
+                                        <i class="bi bi-calendar-check text-warning me-2"></i>
+                                        {{ form.deadline.label }}
+                                        {% if form.deadline.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.deadline }}
+                                    {% if form.deadline.help_text %}
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>{{ form.deadline.help_text }}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.deadline.errors %}
+                                    <div class="text-danger small mt-1">{{ form.deadline.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Приоритет -->
+                                <div class="col-md-6 mb-4">
+                                    <label for="{{ form.priority.id_for_label }}" class="form-label fw-semibold text-dark mb-3">
+                                        <i class="bi bi-flag text-danger me-2"></i>
+                                        {{ form.priority.label }}
+                                        {% if form.priority.field.required %}<span class="text-danger">*</span>{% endif %}
+                                    </label>
+                                    {{ form.priority }}
+                                    {% if form.priority.help_text %}
+                                    <div class="form-text text-muted mt-2">
+                                        <i class="bi bi-info-circle me-1"></i>{{ form.priority.help_text }}
+                                    </div>
+                                    {% endif %}
+                                    {% if form.priority.errors %}
+                                    <div class="text-danger small mt-1">{{ form.priority.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Статус цели -->
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.is_completed }}
+                                    <label class="form-check-label fw-semibold text-dark ms-3" for="{{ form.is_completed.id_for_label }}">
+                                        <i class="bi bi-check-circle text-success me-2"></i>
+                                        {{ form.is_completed.label }}
+                                    </label>
+                                </div>
+                                {% if form.is_completed.help_text %}
+                                <div class="form-text text-muted mt-2">
+                                    <i class="bi bi-info-circle me-1"></i>{{ form.is_completed.help_text }}
+                                </div>
+                                {% endif %}
+                                {% if form.is_completed.errors %}
+                                <div class="text-danger small mt-1">{{ form.is_completed.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex gap-3 mt-4 pt-4 border-top">
+                                <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    {% if goal %}Сохранить изменения{% else %}Создать цель{% endif %}
+                                </button>
+                                <a href="{% url 'budget:savings_goals' %}" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-x-circle me-2"></i>Отмена
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Карточка с рекомендациями -->
+                <div class="card mt-4 shadow-soft">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3 text-dark">
+                            <i class="bi bi-graph-up text-success me-2"></i>Как эффективно достигать целей
+                        </h6>
+                        
+                        <!-- Прогресс-бар для визуализации -->
+                        {% if goal %}
+                        <div class="progress-container mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-semibold">Прогресс цели:</span>
+                                <span class="fw-bold text-primary">{{ goal.progress_percentage|floatformat:1 }}%</span>
+                            </div>
+                            <div class="progress" style="height: 10px; border-radius: 10px;">
+                                <div class="progress-bar bg-gradient-purple" role="progressbar" 
+                                     style="width: {{ goal.progress_percentage }}%; border-radius: 10px;" 
+                                     aria-valuenow="{{ goal.progress_percentage }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">Накоплено: {{ goal.current_amount }} ₽</small>
+                                <small class="text-muted">Цель: {{ goal.target_amount }} ₽</small>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-1-circle text-primary me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Реалистичные цели</strong>
+                                        <p class="text-muted mb-0 small">Ставьте достижимые цели с четкими сроками</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-2-circle text-success me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Регулярные взносы</strong>
+                                        <p class="text-muted mb-0 small">Откладывайте фиксированную сумму каждый месяц</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-3-circle text-warning me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Отслеживание прогресса</strong>
+                                        <p class="text-muted mb-0 small">Регулярно проверяйте прогресс в дашборде</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start mb-3">
+                                    <i class="bi bi-4-circle text-info me-3 mt-1"></i>
+                                    <div>
+                                        <strong>Корректировка планов</strong>
+                                        <p class="text-muted mb-0 small">При необходимости адаптируйте цели к изменениям</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="mt-3">
-                <button type="submit" class="btn btn-success">
-                    <i class="bi bi-check-circle"></i> Сохранить цель
-                </button>
-                <a href="{% url 'budget:savings_goals' %}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Отмена
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // формы для улучшенного стиля
+    const formControls = document.querySelectorAll('input, select, textarea');
+    formControls.forEach(control => {
+        control.classList.add('form-control', 'form-control-lg');
+        if (control.tagName === 'SELECT') {
+            control.classList.add('form-select', 'form-select-lg');
+        }
+    });
+    
+    // Стилизация чекбокса "Цель выполнена"
+    const isCompletedCheckbox = document.querySelector('input[type="checkbox"]');
+    if (isCompletedCheckbox) {
+        isCompletedCheckbox.classList.add('form-check-input');
+        isCompletedCheckbox.style.transform = 'scale(1.3)';
+        isCompletedCheckbox.style.marginLeft = '0';
+    }
+
+    // текущая дата + 1 год для срока достижения, если поле пустое
+    const deadlineField = document.querySelector('input[type="date"]#{{ form.deadline.id_for_label }}');
+    if (deadlineField && !deadlineField.value) {
+        const oneYearLater = new Date();
+        oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+        deadlineField.value = oneYearLater.toISOString().split('T')[0];
+    }
+
+    // Валидация сумм 
+    const targetAmountField = document.querySelector('#{{ form.target_amount.id_for_label }}');
+    const currentAmountField = document.querySelector('#{{ form.current_amount.id_for_label }}');
+    
+    function validateAmounts() {
+        if (targetAmountField && currentAmountField) {
+            const target = parseFloat(targetAmountField.value) || 0;
+            const current = parseFloat(currentAmountField.value) || 0;
+            
+            if (current > target) {
+                currentAmountField.style.borderColor = '#dc3545';
+                currentAmountField.title = 'Текущая сумма не может превышать целевую';
+            } else {
+                currentAmountField.style.borderColor = '';
+                currentAmountField.title = '';
+            }
+        }
+    }
+
+    if (targetAmountField && currentAmountField) {
+        targetAmountField.addEventListener('input', validateAmounts);
+        currentAmountField.addEventListener('input', validateAmounts);
+    }
+});
+</script>
+
 <style>
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 2px solid #e9ecef;
-        padding: 12px;
-        transition: all 0.3s ease;
+.dashboard-theme {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+.card {
+    border: none;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.shadow-soft {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08) !important;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12) !important;
+}
+
+.bg-gradient-purple {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%) !important;
+}
+
+.card-header {
+    border-radius: 16px 16px 0 0 !important;
+    padding: 1.5rem 2rem;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #8B5CF6;
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+.form-control-lg {
+    font-size: 1.1rem;
+}
+
+.btn {
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+}
+
+.btn-outline-secondary {
+    border: 2px solid #e2e8f0;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f8fafc;
+    border-color: #8B5CF6;
+    color: #8B5CF6;
+}
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Стили для чекбокса */
+.form-check-input {
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+}
+
+.form-check-input:checked {
+    background-color: #8B5CF6;
+    border-color: #8B5CF6;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.25);
+}
+
+/* Стили для прогресс-бара */
+.progress-container {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+}
+
+.bg-gradient-purple {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%) !important;
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
     }
     
-    .form-control:focus, .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    .btn-lg {
+        padding: 0.75rem 1rem;
     }
+    
+    .display-6 {
+        font-size: 2rem;
+    }
+    
+    .row .col-md-6 {
+        margin-bottom: 1rem;
+    }
+    
+    .form-check-input {
+        transform: scale(1.1) !important;
+    }
+}
+
+/* стили для полей даты и чисел */
+input[type="date"], input[type="number"] {
+    max-width: 100%;
+}
 </style>
 {% endblock %}

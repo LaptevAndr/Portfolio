@@ -12,6 +12,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm 
+from datetime import datetime, timedelta
+from django.db import models
 
 
 
@@ -42,53 +44,129 @@ def register(request):
 
 @login_required
 def transaction_list(request):
-    transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
+    # Фильтрация за последние 30 дней для статистики
+    thirty_days_ago = now().date() - timedelta(days=30)
     
-    income_agg = transactions.filter(category__type='income').aggregate(total=Sum('amount'))
-    expense_agg = transactions.filter(category__type='expense').aggregate(total=Sum('amount'))
+    # Все транзакции для истории
+    all_transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
+    
+    # Транзакции за последние 30 дней для статистики
+    recent_transactions = all_transactions.filter(date__gte=thirty_days_ago)
+    
+    # Базовая статистика за 30 дней
+    income_agg = recent_transactions.filter(category__type='income').aggregate(total=Sum('amount'))
+    expense_agg = recent_transactions.filter(category__type='expense').aggregate(total=Sum('amount'))
     
     total_income = income_agg['total'] or Decimal('0')
     total_expense = expense_agg['total'] or Decimal('0')
     balance = total_income - total_expense
 
-    # данные для графика
-    chart_data = None
+    # Форматируем числа
+    total_income = total_income.quantize(Decimal('0.01'))
+    total_expense = total_expense.quantize(Decimal('0.01'))
+    balance = balance.quantize(Decimal('0.01'))
+
+    # Данные для основной финансовой диаграммы (доходы/расходы)
+    main_chart_data = None
     if total_income > 0 or total_expense > 0:
-        chart_data = {
+        main_chart_data = {
             'labels': ['Доходы', 'Расходы'],
             'values': [float(total_income), float(total_expense)],
             'colors': ['#28a745', '#dc3545']
         }
 
-    # Получаем цели накопления
+    # Диаграмма расходов по категориям за 30 дней
+    expense_categories_data = None
+    expense_by_category = recent_transactions.filter(
+        category__type='expense'
+    ).values('category__name').annotate(total=Sum('amount')).order_by('-total')
+    
+    if expense_by_category:
+        expense_categories_data = {
+            'labels': [item['category__name'] for item in expense_by_category],
+            'values': [float(item['total']) for item in expense_by_category],
+            'colors': ['#dc3545', '#e74c3c', '#c0392b', '#ff6b6b', '#ee5a24']
+        }
+
+    # Диаграмма кредитных платежей за 30 дней
+    credit_payments_data = None
+    credit_transactions = recent_transactions.filter(
+        Q(category__is_credit_related=True) | Q(loan__isnull=False)
+    )
+    
+    if credit_transactions.exists():
+        credit_payments_by_loan = credit_transactions.values(
+            'loan__name', 'category__name'
+        ).annotate(total=Sum('amount')).order_by('-total')
+        
+        labels = []
+        values = []
+        for item in credit_payments_by_loan:
+            if item['loan__name']:
+                labels.append(f"{item['loan__name']}")
+            else:
+                labels.append(f"{item['category__name']}")
+            values.append(float(item['total']))
+        
+        if labels and values:
+            credit_payments_data = {
+                'labels': labels,
+                'values': values,
+                'colors': ['#8e44ad', '#9b59b6', '#3498db', '#2980b9']
+            }
+
+    # Диаграмма накоплений
+    savings_chart_data = None
     savings_goals = SavingsGoal.objects.filter(user=request.user)
+    if savings_goals.exists():
+        savings_chart_data = {
+            'labels': [goal.name for goal in savings_goals],
+            'current_values': [float(goal.current_amount) for goal in savings_goals],
+            'target_values': [float(goal.target_amount) for goal in savings_goals],
+            'progress': [float(goal.progress_percentage) for goal in savings_goals],
+            'colors': ['#27ae60', '#2ecc71', '#1abc9c', '#16a085']
+        }
+
+    # Диаграмма кредитов
+    loans_chart_data = None
+    loans = Loan.objects.filter(user=request.user)
+    if loans.exists():
+        loans_chart_data = {
+            'labels': [loan.name for loan in loans],
+            'paid_values': [float(loan.paid_amount) for loan in loans],
+            'remaining_values': [float(loan.remaining_amount) for loan in loans],
+            'progress': [float(loan.progress_percentage) for loan in loans],
+            'colors': ['#e74c3c', '#c0392b', '#d35400', '#e67e22']
+        }
+
+    # Общая статистика
     total_savings_goal = sum(goal.target_amount for goal in savings_goals) or Decimal('0')
     total_current_savings = sum(goal.current_amount for goal in savings_goals) or Decimal('0')
     
-    # Получаем кредиты
-    loans = Loan.objects.filter(user=request.user)
     total_debt = sum(loan.remaining_amount for loan in loans) or Decimal('0')
     total_monthly_payments = sum(loan.monthly_payment for loan in loans) or Decimal('0')
     
-    # Свободные деньги после обязательных платежей
+    # Свободные деньги
     free_money_after_expenses = balance - total_monthly_payments
-    
-    # Расчет свободных денег после сбережений
     free_money_after_savings = free_money_after_expenses
+    
     if total_savings_goal > 0 and total_savings_goal > total_current_savings:
         monthly_savings_need = (total_savings_goal - total_current_savings) / Decimal('12')
         free_money_after_savings = free_money_after_expenses - monthly_savings_need
     
-    # Не допускаем отрицательные значения
     free_money_after_savings = max(free_money_after_savings, Decimal('0'))
     free_money_after_expenses = max(free_money_after_expenses, Decimal('0'))
 
     context = {
-        'transactions': transactions,
+        'transactions': all_transactions,
         'total_income': total_income,
         'total_expense': total_expense,
         'balance': balance,
-        'chart_data': chart_data,
+        'main_chart_data': main_chart_data,
+        'expense_categories_data': expense_categories_data,
+        'credit_payments_data': credit_payments_data,
+        'savings_chart_data': savings_chart_data,
+        'loans_chart_data': loans_chart_data,
         'savings_goals': savings_goals,
         'loans': loans,
         'total_savings_goal': total_savings_goal,
@@ -97,6 +175,7 @@ def transaction_list(request):
         'total_monthly_payments': total_monthly_payments,
         'free_money_after_expenses': free_money_after_expenses,
         'free_money_after_savings': free_money_after_savings,
+        'period_days': 30,  # Показываем период в шаблоне
     }
     return render(request, 'budget/transaction_list.html', context)
 
@@ -118,7 +197,18 @@ def add_transaction(request):
 @login_required
 def savings_goals(request):
     goals = SavingsGoal.objects.filter(user=request.user)
-    return render(request, 'budget/savings_goals.html', {'goals': goals})
+    total_savings_goal = goals.aggregate(total=Sum('target_amount'))['total'] or 0
+    total_current_savings = goals.aggregate(total=Sum('current_amount'))['total'] or 0
+    
+    remaining_amount = total_savings_goal - total_current_savings
+    
+    context = {
+        'goals': goals,
+        'total_savings_goal': total_savings_goal,
+        'total_current_savings': total_current_savings,
+        'remaining_amount': remaining_amount,
+    }
+    return render(request, 'budget/savings_goals.html', context)
 
 @login_required
 def loans_list(request):

@@ -8,19 +8,27 @@
 <header class="fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 0; z-index: 1030; border-bottom: 1px solid rgba(0,0,0,0.1);">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-            <div class="logo fw-bold fs-3 text-dark">
+            <div class="logo fw-bold fs-3 text-dark" style="margin-left: 20px;">
                 <a href="{% url 'budget:home' %}" class="text-dark text-decoration-none">Money<span style="color: #8B5CF6;">Mind</span></a>
             </div>
             <div class="auth-buttons">
                 {% if user.is_authenticated %}
-                    <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-purple btn-sm me-2">Дашборд</a>
+                    <a href="{% url 'budget:transaction_list' %}" class="btn btn-outline-purple btn-sm me-2">
+                        <i class="bi bi-speedometer2 me-1"></i>Дашборд
+                    </a>
                     <form method="post" action="{% url 'logout' %}" style="display: inline;">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-gradient-purple btn-sm">Выйти</button>
-</form>
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-gradient-purple btn-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i>Выйти
+                        </button>
+                    </form>
                 {% else %}
-                    <a href="{% url 'budget:login' %}" class="btn btn-outline-purple btn-sm me-2">Войти</a>
-                    <a href="{% url 'budget:register' %}" class="btn btn-gradient-purple btn-sm">Регистрация</a>
+                    <a href="{% url 'budget:register' %}" class="btn btn-gradient-purple btn-sm">
+                        <i class="bi bi-person-plus me-1"></i>Регистрация
+                    </a>
+                    <a href="{% url 'budget:login' %}" class="btn btn-outline-purple btn-sm me-2">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -28,18 +36,18 @@
 </header>
 
 <!-- Главная секция -->
-<section class="hero-section min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative; overflow: hidden;">
-    <div class="centered-container">
-        <div class="row align-items-center">
+<section id="hero" class="hero-section min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative; overflow: hidden;">
+    <div class="centered-container position-relative h-100">
+        <div class="row align-items-center h-100">
             <div class="col-lg-6">
-                <h1 class="display-3 fw-bold text-dark mb-4 animate-fade-in">
+                <h1 class="display-3 fw-bold text-dark mb-4">
                     Знайте, куда уходят деньги.<br>Решайте, куда они придут.
                 </h1>
-                <p class="lead text-gray-600 mb-4 animate-fade-in-delay">
+                <p class="lead text-gray-600 mb-4">
                     MoneyMind - элегантный инструмент для управления личными финансами, 
                     который поможет вам достигать финансовых целей с легкостью и стилем.
                 </p>
-                <div class="animate-slide-up">
+                <div>
                     {% if user.is_authenticated %}
                     <a href="{% url 'budget:transaction_list' %}" class="btn btn-gradient-purple btn-lg rounded-xl px-4 py-3 me-3">
                         <i class="bi bi-graph-up me-2"></i>Перейти в дашборд
@@ -54,14 +62,21 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="col-lg-6 text-center animate-float">
+            <div class="col-lg-6 text-center">
                 <div class="hero-image position-relative">
-                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 500px;">
+                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 1000px;">
                     <div class="floating-element-1"></div>
                     <div class="floating-element-2"></div>
                     <div class="floating-element-3"></div>
                 </div>
             </div>
+        </div>
+        
+        <!-- стрелка прокрутки -->
+        <div class="scroll-indicator">
+            <a href="#features" class="scroll-down">
+                <i class="bi bi-chevron-down"></i>
+            </a>
         </div>
     </div>
 </section>
@@ -387,67 +402,145 @@
             </div>
         </div>
         
-        <div class="text-center mt-5">
+        <div class="text-center mt-5 mb-5">
             <a href="#" class="btn btn-gradient-purple">Все новости</a>
         </div>
     </div>
 </section>
 
+<!-- Секция "О нас" -->
+<section id="about" class="py-5 bg-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="display-5 fw-bold text-dark mb-4">О проекте MoneyMind</h2>
+                <p class="lead text-gray-600 mb-5">
+                    MoneyMind создан для того, чтобы помочь вам взять под контроль свои финансы 
+                    и достичь финансовой свободы. Мы верим, что каждый заслуживает ясности 
+                    в своих денежных вопросах.
+                </p>
+                
+                <div class="row mt-5">
+                    <div class="col-md-4 mb-4">
+                        <div class="about-feature">
+                            <i class="bi bi-shield-check display-4 text-primary mb-3"></i>
+                            <h5>Безопасность</h5>
+                            <p class="text-muted">Ваши данные защищены современными методами шифрования</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="about-feature">
+                            <i class="bi bi-graph-up display-4 text-success mb-3"></i>
+                            <h5>Аналитика</h5>
+                            <p class="text-muted">Подробные отчеты и визуализация ваших финансов</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="about-feature">
+                            <i class="bi bi-headset display-4 text-info mb-3"></i>
+                            <h5>Поддержка</h5>
+                            <p class="text-muted">Мы всегда готовы помочь с любыми вопросами</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Форма обратной связи -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <h2 class="text-center mb-4">Свяжитесь с нами</h2>
+                <form id="contact-form">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Сообщение</label>
+                        <textarea class="form-control" id="message" rows="4" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Отправить сообщение</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Вопросы и ответы -->
-<section class="bg-dark section">
+<section class="bg-gradient-purple-soft section text-white">
     <div class="centered-container">
-        <h2 class="text-center text-white mb-5">Часто задаваемые вопросы</h2>
+        <h2 class="text-center mb-5">Часто задаваемые вопросы</h2>
         
-        <div class="accordion" id="faqAccordion">
-            <div class="accordion-item border-0 mb-3">
+        <div class="accordion accordion-flush" id="faqAccordion">
+            <div class="accordion-item bg-transparent text-white border-0 mb-3">
                 <h3 class="accordion-header" id="headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                    <button class="accordion-button bg-transparent text-white collapsed" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapseOne" 
+                            aria-expanded="false" aria-controls="collapseOne">
                         Как начать пользоваться MoneyMind?
                     </button>
                 </h3>
-                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" 
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-80">
                         Для начала работы с MoneyMind просто зарегистрируйтесь на нашем сайте, заполнив базовую информацию о себе. После регистрации вы сможете добавить свои первые финансовые операции, создать бюджет и поставить финансовые цели.
                     </div>
                 </div>
             </div>
             
-            <div class="accordion-item border-0 mb-3">
+            <div class="accordion-item bg-transparent text-white border-0 mb-3">
                 <h3 class="accordion-header" id="headingTwo">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    <button class="accordion-button bg-transparent text-white collapsed" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapseTwo" 
+                            aria-expanded="false" aria-controls="collapseTwo">
                         Безопасно ли хранить свои финансовые данные в MoneyMind?
                     </button>
                 </h3>
-                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" 
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-80">
                         Да, мы используем современные методы шифрования и защиты данных. Ваша финансовая информация хранится в зашифрованном виде, и мы никогда не передаем ваши данные третьим лицам без вашего явного согласия.
                     </div>
                 </div>
             </div>
             
-            <div class="accordion-item border-0 mb-3">
+            <div class="accordion-item bg-transparent text-white border-0 mb-3">
                 <h3 class="accordion-header" id="headingThree">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    <button class="accordion-button bg-transparent text-white collapsed" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapseThree" 
+                            aria-expanded="false" aria-controls="collapseThree">
                         Можно ли синхронизировать данные с банковскими счетами?
-                        <span class="badge bg-info ms-2">Скоро</span>
+                        <span class="badge bg-light text-purple ms-2">Скоро</span>
                     </button>
                 </h3>
-                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" 
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-80">
                         В настоящее время мы работаем над интеграцией с крупнейшими банками. Синхронизация станет доступна в одном из ближайших обновлений. Пока вы можете импортировать выписки вручную.
                     </div>
                 </div>
             </div>
             
-            <div class="accordion-item border-0 mb-3">
+            <div class="accordion-item bg-transparent text-white border-0 mb-3">
                 <h3 class="accordion-header" id="headingFour">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                    <button class="accordion-button bg-transparent text-white collapsed" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#collapseFour" 
+                            aria-expanded="false" aria-controls="collapseFour">
                         Есть ли мобильное приложение MoneyMind?
-                        <span class="badge bg-warning ms-2">В разработке</span>
+                        <span class="badge bg-warning text-dark ms-2">В разработке</span>
                     </button>
                 </h3>
-                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
-                    <div class="accordion-body">
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" 
+                     data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-white-80">
                         Мобильное приложение находится в активной разработке. Ожидайте его запуск в следующем квартале. Следите за обновлениями на нашем сайте.
                     </div>
                 </div>
@@ -457,6 +550,55 @@
 </section>
 
 <style>
+/* СТИЛИ ДЛЯ СТРЕЛКИ ПРОКРУТКИ */
+.scroll-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    text-align: center;
+}
+
+.scroll-down {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #8B5CF6;
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.2);
+}
+
+.scroll-down:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: #8B5CF6;
+    transform: scale(1.1);
+    color: #8B5CF6;
+    animation: none;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* ОСНОВНЫЕ СТИЛИ */
 .btn-gradient-purple {
     background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
     color: white;
@@ -748,6 +890,74 @@
         padding: 0.4rem 1rem;
         font-size: 0.9rem;
     }
+
+    /* Адаптация стрелки для мобильных */
+    .scroll-down {
+        width: 50px;
+        height: 50px;
+        font-size: 2rem;
+    }
+    
+    .scroll-indicator {
+        bottom: 20px;
+    }
+}
+
+/* стили для FAQ секции */
+.bg-gradient-purple-soft {
+    background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%) !important;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    box-shadow: none;
+}
+
+.accordion-button::after {
+    filter: brightness(0) invert(1); 
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.text-white-80 {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.bg-dark-2 {
+    background-color: #2D3748 !important;
+}
+
+.bg-dark {
+    background-color: #1A202C !important;
+}
+
+/* отступы между секциями */
+.section {
+    padding: 4rem 0;
+}
+
+.section-sm {
+    padding: 2rem 0;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Плавная прокрутка для всей страницы */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Отступ для фиксированного хедера при прокрутке по якорям */
+#features {
+    scroll-margin-top: 80px;
 }
 </style>
 
@@ -796,6 +1006,27 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         updateCount();
+    });
+
+    // Плавная прокрутка с учетом фиксированного хедера
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                const headerHeight = document.querySelector('header').offsetHeight;
+                const targetPosition = targetElement.offsetTop - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
 });
 </script>

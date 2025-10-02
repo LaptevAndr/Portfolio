@@ -13,6 +13,9 @@ class Category(models.Model):
         ('expense', 'Расход'),
     )
     type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    
+    # Поле для отметки кредитных категорий
+    is_credit_related = models.BooleanField(default=False, verbose_name='Связано с кредитами')
 
     # Метод для красивого отображения объекта в админке
     def __str__(self):
@@ -25,6 +28,10 @@ class Transaction(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE) # Связь с категорией
     date = models.DateField() # Дата операции
     description = models.TextField(blank=True) # Описание, может быть пустым
+    
+    # Связь с кредитом (если транзакция - платеж по кредиту)
+    loan = models.ForeignKey('Loan', on_delete=models.SET_NULL, null=True, blank=True, 
+                           verbose_name='Связанный кредит')
 
     def __str__(self):
         return f"{self.date} - {self.category}: {self.amount}"
@@ -72,6 +79,18 @@ class Loan(models.Model):
         if now().date() < self.end_date:
             delta = relativedelta(self.end_date, now().date())
             return delta.years * 12 + delta.months
+        return 0
+    
+    # Вычисляемое свойство для выплаченной суммы
+    @property
+    def paid_amount(self):
+        return self.total_amount - self.remaining_amount
+    
+    # Вычисляемое свойство для прогресса выплаты
+    @property
+    def progress_percentage(self):
+        if self.total_amount > 0:
+            return (self.paid_amount / self.total_amount) * 100
         return 0
     
     def __str__(self):
