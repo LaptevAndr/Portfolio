@@ -1,13 +1,10 @@
-import os
 from pathlib import Path
-from dotenv import load_dotenv
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+SECRET_KEY='e5#hjp*7qvdz)jdc8pslerb^px*v!n4r45rr^adl90ic3v=jzo'
+DEBUG=True
 
-load_dotenv()
-
-SECRET_KEY = os.environ['SECRET_KEY']
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -56,8 +53,9 @@ WSGI_APPLICATION = 'moneymind.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'moneymind_db',           # Имя БД
+        'ENGINE': 'django.db.backends.sqlite3',#'django.db.backends.postgresql',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        #'NAME': 'moneymind_db',           # Имя БД
         'USER': 'moneymind_user',         # Имя пользователя БД
         'PASSWORD': 'Admin2025',  # Пароль
         'HOST': 'localhost',

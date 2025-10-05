@@ -6,8 +6,6 @@ from dateutil.relativedelta import relativedelta
 from django.utils.timezone import now
 from decimal import Decimal
 from django.db.models import Sum, Q
-import plotly.express as px
-import json
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
