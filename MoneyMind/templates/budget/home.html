@@ -5,10 +5,10 @@
 
 {% block content %}
 <!-- Хедер с кнопками навигации -->
-<header class="fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 0; z-index: 1030; border-bottom: 1px solid rgba(0,0,0,0.1);">
+<header class="fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 8px 0; z-index: 1030; border-bottom: 1px solid rgba(0,0,0,0.1);">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-            <div class="logo fw-bold fs-3 text-dark" style="margin-left: 20px;">
+            <div class="logo fw-bold fs-5 text-dark" style="margin-left: 40px;">
                 <a href="{% url 'budget:home' %}" class="text-dark text-decoration-none">Money<span style="color: #8B5CF6;">Mind</span></a>
             </div>
             <div class="auth-buttons">
@@ -37,11 +37,11 @@
 
 <!-- Главная секция -->
 <section id="hero" class="hero-section min-vh-100 d-flex align-items-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); position: relative; overflow: hidden;">
-    <div class="centered-container position-relative h-100">
+    <div class="container position-relative">
         <div class="row align-items-center h-100">
             <div class="col-lg-6">
-                <div class="ps-5 ps-lg-6">
-                    <h1 class="display-3 fw-bold text-dark mb-4">
+                <div class="ps-lg-5">
+                    <h1 class="display-4 fw-bold text-dark mb-4">
                         Знайте, куда уходят деньги.<br>Решайте, куда они придут.
                     </h1>
                     <p class="lead text-gray-600 mb-4">
@@ -66,10 +66,7 @@
             </div>
             <div class="col-lg-6 text-center">
                 <div class="hero-image position-relative">
-                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 1000px;">
-                    <div class="floating-element-1"></div>
-                    <div class="floating-element-2"></div>
-                    <div class="floating-element-3"></div>
+                    <img src="{% static 'images/finance-hero.png' %}" alt="Finance Dashboard" class="img-fluid" style="max-height: 600px; width: auto;">
                 </div>
             </div>
         </div>
@@ -85,7 +82,7 @@
 
 <!-- Раздел «Функции» -->
 <section id="features" class="py-5 bg-light-2">
-    <div class="centered-container">
+    <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-4 fw-bold text-dark mb-3">Элегантные возможности</h2>
             <p class="lead text-gray-600">Интуитивный контроль над вашими финансами</p>
@@ -94,7 +91,7 @@
         <div class="row g-4">
             <!-- Возможности 1 -->
             <div class="col-md-4">
-                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift">
+                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-cash-stack text-white fs-1"></i>
@@ -107,7 +104,7 @@
 
             <!-- Возможности 2 -->
             <div class="col-md-4">
-                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift">
+                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-bullseye text-white fs-1"></i>
@@ -120,7 +117,7 @@
 
             <!-- Возможности 3 -->
             <div class="col-md-4">
-                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift">
+                <div class="feature-card card h-100 border-0 bg-white shadow-soft hover-lift rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-pie-chart text-white fs-1"></i>
@@ -136,10 +133,10 @@
 
 <!-- Раздел статистики -->
 <section class="py-5 bg-white">
-    <div class="centered-container">
+    <div class="container">
         <div class="row text-center">
             <div class="col-md-3 mb-4">
-                <div class="stat-item p-4">
+                <div class="stat-item p-4 rounded-section">
                     <div class="stat-icon bg-purple-soft rounded-2 mx-auto mb-3">
                         <i class="bi bi-people text-purple fs-2"></i>
                     </div>
@@ -148,7 +145,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="stat-item p-4">
+                <div class="stat-item p-4 rounded-section">
                     <div class="stat-icon bg-purple-soft rounded-2 mx-auto mb-3">
                         <i class="bi bi-graph-up-arrow text-purple fs-2"></i>
                     </div>
@@ -157,7 +154,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="stat-item p-4">
+                <div class="stat-item p-4 rounded-section">
                     <div class="stat-icon bg-purple-soft rounded-2 mx-auto mb-3">
                         <i class="bi bi-currency-exchange text-purple fs-2"></i>
                     </div>
@@ -166,7 +163,7 @@
                 </div>
             </div>
             <div class="col-md-3 mb-4">
-                <div class="stat-item p-4">
+                <div class="stat-item p-4 rounded-section">
                     <div class="stat-icon bg-purple-soft rounded-2 mx-auto mb-3">
                         <i class="bi bi-award text-purple fs-2"></i>
                     </div>
@@ -180,7 +177,7 @@
 
 <!-- Раздел отзывов -->
 <section class="py-5 bg-light-2">
-    <div class="centered-container">
+    <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-4 fw-bold text-dark mb-3">Истории успеха</h2>
             <p class="lead text-gray-600">Наши пользователи делятся своими достижениями</p>
@@ -189,7 +186,7 @@
         <div class="row">
             <!-- Отзыв 1 -->
             <div class="col-md-6 mb-4">
-                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft">
+                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <div class="testimonial-avatar bg-gradient-purple-soft rounded-2 me-3">
@@ -207,7 +204,7 @@
             
             <!-- Отзыв 2 -->
             <div class="col-md-6 mb-4">
-                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft">
+                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <div class="testimonial-avatar bg-gradient-purple-soft rounded-2 me-3">
@@ -225,7 +222,7 @@
             
             <!-- Отзыв 3 -->
             <div class="col-md-6 mb-4">
-                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft">
+                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <div class="testimonial-avatar bg-gradient-purple-soft rounded-2 me-3">
@@ -243,7 +240,7 @@
             
             <!-- Отзыв 4 -->
             <div class="col-md-6 mb-4">
-                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft">
+                <div class="testimonial-card card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-3">
                             <div class="testimonial-avatar bg-gradient-purple-soft rounded-2 me-3">
@@ -264,7 +261,7 @@
 
 <!-- Секция финансовой грамотности -->
 <section class="py-5 bg-white">
-    <div class="centered-container">
+    <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-4 fw-bold text-dark mb-3">Повышайте финансовую грамотность</h2>
             <p class="lead text-gray-600">Полезные советы от наших экспертов</p>
@@ -272,7 +269,7 @@
 
         <div class="row">
             <div class="col-md-6 col-lg-3 mb-4">
-                <div class="card h-100 border-0 bg-white shadow-soft">
+                <div class="card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-calendar-check text-white fs-4"></i>
@@ -284,7 +281,7 @@
             </div>
             
             <div class="col-md-6 col-lg-3 mb-4">
-                <div class="card h-100 border-0 bg-white shadow-soft">
+                <div class="card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-piggy-bank text-white fs-4"></i>
@@ -296,7 +293,7 @@
             </div>
             
             <div class="col-md-6 col-lg-3 mb-4">
-                <div class="card h-100 border-0 bg-white shadow-soft">
+                <div class="card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-graph-up-arrow text-white fs-4"></i>
@@ -308,7 +305,7 @@
             </div>
             
             <div class="col-md-6 col-lg-3 mb-4">
-                <div class="card h-100 border-0 bg-white shadow-soft">
+                <div class="card h-100 border-0 bg-white shadow-soft rounded-section">
                     <div class="card-body text-center p-4">
                         <div class="feature-icon bg-gradient-purple-soft rounded-2 mx-auto mb-4">
                             <i class="bi bi-lightbulb text-white fs-4"></i>
@@ -324,10 +321,10 @@
 
 <!-- Раздел мотивации -->
 <section class="py-5 bg-gradient-purple-soft text-white">
-    <div class="centered-container">
+    <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
-                <div class="motivation-card p-5 rounded-3 bg-white-10 shadow-soft">
+                <div class="motivation-card p-5 rounded-section bg-white-10 shadow-soft">
                     <i class="bi bi-stars display-4 mb-4 text-white"></i>
                     <h3 class="fw-bold mb-4">Финансовая свобода начинается с осознанного управления деньгами</h3>
                     <p class="mb-0 opacity-80">Присоединяйтесь к сообществу людей, которые уже изменили свою финансовую жизнь</p>
@@ -339,7 +336,7 @@
 
 <!-- Раздел призыва к действию -->
 <section class="py-5 bg-white">
-    <div class="centered-container">
+    <div class="container">
         <div class="row justify-content-center text-center">
             <div class="col-lg-8">
                 <h2 class="display-5 fw-bold text-dark mb-4">Начните свой путь к финансовой свободе</h2>
@@ -363,49 +360,108 @@
 
 <!-- Новости о финансах -->
 <section class="bg-dark-2 section">
-    <div class="centered-container">
+    <div class="container">
         <h2 class="text-center text-white mb-5">Последние новости финансового мира</h2>
         
         <div class="row g-4">
+            <!-- Новость 1 -->
             <div class="col-md-4">
-                <div class="card news-card h-100 border-0 bg-dark">
+                <div class="card news-card h-100 border-0 bg-dark rounded-section">
                     <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Финансовые рынки">
                     <div class="card-body">
                         <span class="news-date">15 сентября 2025</span>
                         <h5 class="card-title text-white mt-2">Изменения на финансовых рынках</h5>
                         <p class="card-text text-light">Аналитики прогнозируют рост ключевых индексов в следующем квартале благодаря стабилизации экономической ситуации.</p>
-                        <a href="#" class="btn btn-sm btn-outline-purple">Читать далее</a>
+                        
+                        <!-- Аккордеон контент -->
+                        <div class="accordion-content mt-3" style="display: none;">
+                            <div class="border-top pt-3">
+                                <p class="text-light small">Основные индексы S&P 500 и NASDAQ показали рост на 5% и 7% соответственно. Эксперты связывают это с улучшением макроэкономических показателей и снижением инфляционного давления.</p>
+                                <p class="text-light small">Рекомендации для инвесторов: обратить внимание на сектор технологий и здравоохранения.</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-sm btn-outline-purple read-more-btn mt-2" data-bs-toggle="collapse" data-bs-target="#news1">
+                            <span class="show-text">Читать далее</span>
+                            <span class="hide-text" style="display: none;">Скрыть</span>
+                        </button>
+                        
+                        <!-- Collapse контент для мобильных -->
+                        <div class="collapse" id="news1">
+                            <div class="border-top pt-3 mt-2">
+                                <p class="text-light small">Основные индексы S&P 500 и NASDAQ показали рост на 5% и 7% соответственно. Эксперты связывают это с улучшением макроэкономических показателей и снижением инфляционного давления.</p>
+                                <p class="text-light small">Рекомендации для инвесторов: обратить внимание на сектор технологий и здравоохранения.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- Новость 2 -->
             <div class="col-md-4">
-                <div class="card news-card h-100 border-0 bg-dark">
+                <div class="card news-card h-100 border-0 bg-dark rounded-section">
                     <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Инвестиции">
                     <div class="card-body">
                         <span class="news-date">12 сентября 2025</span>
                         <h5 class="card-title text-white mt-2">Новые тренды в инвестировании</h5>
                         <p class="card-text text-light">Криптовалюты и ESG-инвестиции продолжают набирать популярность среди частных инвесторов.</p>
-                        <a href="#" class="btn btn-sm btn-outline-purple">Читать далее</a>
+                        
+                        <!-- Аккордеон контент -->
+                        <div class="accordion-content mt-3" style="display: none;">
+                            <div class="border-top pt-3">
+                                <p class="text-light small">Согласно исследованию Bloomberg, объем инвестиций в ESG-фонды вырос на 45% за последний год. Криптовалютные активы привлекли более $2 млрд институциональных инвестиций.</p>
+                                <p class="text-light small">Топ-3 тренда: устойчивые инвестиции, DeFi платформы, токенизация активов.</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-sm btn-outline-purple read-more-btn mt-2" data-bs-toggle="collapse" data-bs-target="#news2">
+                            <span class="show-text">Читать далее</span>
+                            <span class="hide-text" style="display: none;">Скрыть</span>
+                        </button>
+                        
+                        <!-- Collapse контент для мобильных -->
+                        <div class="collapse" id="news2">
+                            <div class="border-top pt-3 mt-2">
+                                <p class="text-light small">Согласно исследованию Bloomberg, объем инвестиций в ESG-фонды вырос на 45% за последний год. Криптовалютные активы привлекли более $2 млрд институциональных инвестиций.</p>
+                                <p class="text-light small">Топ-3 тренда: устойчивые инвестиции, DeFi платформы, токенизация активов.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             
+            <!-- Новость 3 -->
             <div class="col-md-4">
-                <div class="card news-card h-100 border-0 bg-dark">
+                <div class="card news-card h-100 border-0 bg-dark rounded-section">
                     <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Налоги">
                     <div class="card-body">
                         <span class="news-date">8 сентября 2025</span>
                         <h5 class="card-title text-white mt-2">Изменения в налоговом законодательстве</h5>
                         <p class="card-text text-light">С 2026 года ожидаются изменения в налоговом кодексе, которые затронут малый бизнес и фрилансеров.</p>
-                        <a href="#" class="btn btn-sm btn-outline-purple">Читать далее</a>
+                        
+                        <!-- Аккордеон контент -->
+                        <div class="accordion-content mt-3" style="display: none;">
+                            <div class="border-top pt-3">
+                                <p class="text-light small">Планируется введение прогрессивной шкалы НДФЛ для доходов свыше 5 млн рублей в год. Для самозанятых увеличат лимит годового дохода до 3 млн рублей без необходимости регистрации ИП.</p>
+                                <p class="text-light small">Новые налоговые вычеты для IT-специалистов и инвестиций в стартапы.</p>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-sm btn-outline-purple read-more-btn mt-2" data-bs-toggle="collapse" data-bs-target="#news3">
+                            <span class="show-text">Читать далее</span>
+                            <span class="hide-text" style="display: none;">Скрыть</span>
+                        </button>
+                        
+                        <!-- Collapse контент для мобильных -->
+                        <div class="collapse" id="news3">
+                            <div class="border-top pt-3 mt-2">
+                                <p class="text-light small">Планируется введение прогрессивной шкалы НДФЛ для доходов свыше 5 млн рублей в год. Для самозанятых увеличат лимит годового дохода до 3 млн рублей без необходимости регистрации ИП.</p>
+                                <p class="text-light small">Новые налоговые вычеты для IT-специалистов и инвестиций в стартапы.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="text-center mt-5 mb-5">
-            <a href="#" class="btn btn-gradient-purple">Все новости</a>
         </div>
     </div>
 </section>
@@ -424,21 +480,21 @@
                 
                 <div class="row mt-5">
                     <div class="col-md-4 mb-4">
-                        <div class="about-feature">
+                        <div class="about-feature rounded-section p-4">
                             <i class="bi bi-shield-check display-4 text-primary mb-3"></i>
                             <h5>Безопасность</h5>
                             <p class="text-muted">Ваши данные защищены современными методами шифрования</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
-                        <div class="about-feature">
+                        <div class="about-feature rounded-section p-4">
                             <i class="bi bi-graph-up display-4 text-success mb-3"></i>
                             <h5>Аналитика</h5>
                             <p class="text-muted">Подробные отчеты и визуализация ваших финансов</p>
                         </div>
                     </div>
                     <div class="col-md-4 mb-4">
-                        <div class="about-feature">
+                        <div class="about-feature rounded-section p-4">
                             <i class="bi bi-headset display-4 text-info mb-3"></i>
                             <h5>Поддержка</h5>
                             <p class="text-muted">Мы всегда готовы помочь с любыми вопросами</p>
@@ -455,22 +511,24 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <h2 class="text-center mb-4">Свяжитесь с нами</h2>
-                <form id="contact-form">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Имя</label>
-                        <input type="text" class="form-control" id="name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label">Сообщение</label>
-                        <textarea class="form-control" id="message" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Отправить сообщение</button>
-                </form>
+                <div class="rounded-section bg-white p-4 shadow-soft">
+                    <h2 class="text-center mb-4">Свяжитесь с нами</h2>
+                    <form id="contact-form">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Сообщение</label>
+                            <textarea class="form-control" id="message" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Отправить сообщение</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -478,10 +536,10 @@
 
 <!-- Вопросы и ответы -->
 <section class="bg-gradient-purple-soft section text-white">
-    <div class="centered-container">
+    <div class="container">
         <h2 class="text-center mb-5">Часто задаваемые вопросы</h2>
         
-        <div class="accordion accordion-flush" id="faqAccordion">
+        <div class="accordion accordion-flush rounded-section" id="faqAccordion">
             <div class="accordion-item bg-transparent text-white border-0 mb-3">
                 <h3 class="accordion-header" id="headingOne">
                     <button class="accordion-button bg-transparent text-white collapsed" type="button" 
@@ -552,6 +610,46 @@
 </section>
 
 <style>
+/* Глобальные исправления для overflow */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+.container {
+    max-width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Новый класс для скругленных секций с правильными отступами */
+.rounded-section {
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+/* Убираем скругление у контейнеров на мобильных, чтобы не было отступов */
+@media (max-width: 768px) {
+    .rounded-section {
+        border-radius: 12px;
+    }
+    
+    /* Уменьшаем отступы контейнера на мобильных */
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* Убираем скругление у hero секции */
+.hero-section {
+    border-radius: 0 !important;
+}
+
 /* СТИЛИ ДЛЯ СТРЕЛКИ ПРОКРУТКИ */
 .scroll-indicator {
     position: absolute;
@@ -708,7 +806,6 @@
 
 .feature-card {
     transition: all 0.3s ease;
-    border-radius: 20px;
 }
 
 .feature-card:hover {
@@ -717,7 +814,6 @@
 }
 
 .testimonial-card {
-    border-radius: 16px;
     transition: all 0.3s ease;
 }
 
@@ -814,48 +910,32 @@
     }
 }
 
-.floating-element-1, .floating-element-2, .floating-element-3 {
-    position: absolute;
-    background: rgba(139, 92, 246, 0.08);
-    border-radius: 50%;
-    animation: float 8s ease-in-out infinite;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(139, 92, 246, 0.1);
+/* Новости */
+.news-card {
+    transition: all 0.3s ease;
+    border: 1px solid #374151;
 }
 
-.floating-element-1 {
-    width: 100px;
-    height: 100px;
-    top: 20px;
-    right: 30px;
-    animation-delay: 0s;
+.news-card:hover {
+    transform: translateY(-5px);
+    border-color: #8B5CF6;
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
 }
 
-.floating-element-2 {
-    width: 70px;
-    height: 70px;
-    bottom: 40px;
-    left: 20px;
-    animation-delay: 2s;
+.news-date {
+    color: #9CA3AF;
+    font-size: 0.875rem;
 }
 
-.floating-element-3 {
-    width: 85px;
-    height: 85px;
-    top: 50%;
-    right: 10%;
-    animation-delay: 4s;
+.accordion-content {
+    animation: fadeIn 0.3s ease-in;
 }
 
-.floating-element-1,
-.floating-element-2,
-.floating-element-3 {
-    display: none;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-body {
-    overflow-x: hidden;
-}
 /* Hover */
 .hover-lift {
     transition: all 0.3s ease;
@@ -868,12 +948,16 @@ body {
 /* Адаптация */
 @media (max-width: 768px) {
     .display-3 {
-        font-size: 2.5rem;
+        font-size: 2rem !important;
+    }
+    
+    .display-4 {
+        font-size: 1.8rem !important;
     }
     
     .hero-section {
         text-align: center;
-        padding: 80px 0 40px;
+        padding: 60px 0 30px;
     }
     
     .btn {
@@ -888,7 +972,7 @@ body {
     
     /* Адаптация для хедера на мобильных */
     header {
-        padding: 10px 0;
+        padding: 6px 0;
     }
     
     .auth-buttons {
@@ -911,6 +995,16 @@ body {
     
     .scroll-indicator {
         bottom: 20px;
+    }
+    
+    /* Уменьшаем отступы текста на мобильных */
+    .ps-4, .ps-lg-5 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .hero-image img {
+        max-height: 400px !important;
     }
 }
 
@@ -968,7 +1062,7 @@ html {
 
 /* Отступ для фиксированного хедера при прокрутке по якорям */
 #features {
-    scroll-margin-top: 80px;
+    scroll-margin-top: 60px;
 }
 </style>
 

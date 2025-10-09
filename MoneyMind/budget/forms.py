@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 import re
 from datetime import datetime
 
@@ -35,9 +36,39 @@ class CustomUserCreationForm(UserCreationForm):
         })
     )
 
+    password1 = forms.CharField(
+        label=_("Пароль"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Пароль',
+            'autocomplete': 'new-password'
+        }),
+        help_text=_("Пароль должен содержать минимум 8 символов, включая буквы и цифры."),
+    )
+    password2 = forms.CharField(
+        label=_("Подтверждение пароля"),
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Подтверждение пароля',
+            'autocomplete': 'new-password'
+        }),
+        strip=False,
+        help_text=_("Введите тот же пароль, что и выше, для проверки."),
+    )
+
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
+        labels = {
+            'username': 'Имя пользователя',
+        }
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Имя пользователя'
+            }),
+        }
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

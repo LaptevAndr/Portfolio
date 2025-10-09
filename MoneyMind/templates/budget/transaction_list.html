@@ -15,17 +15,20 @@
                     <p class="text-muted">Обзор ваших финансов за последние {{ period_days }} дней</p>
                 </div>
                 <div class="btn-group">
-                    <a href="{% url 'budget:add_transaction' %}" class="btn btn-primary">
+                    <a href="{% url 'budget:add_transaction' %}" class="btn btn-primary me-2">
                         <i class="bi bi-plus-circle me-2"></i>Добавить операцию
+                    </a>
+                    <a href="{% url 'budget:add_balance' %}" class="btn btn-success">
+                        <i class="bi bi-wallet2 me-2"></i>Создать баланс
                     </a>
                 </div>
             </div>
 
             <!-- Основные диаграммы -->
-            <div class="row mb-4">
+            <div class="row mb-4 equal-height-cards">
                 <!-- Основной финансовый график (доходы/расходы) -->
                 <div class="col-xl-4 col-lg-6 mb-4">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0 text-white">Доходы vs Расходы</h5>
                         </div>
@@ -47,7 +50,7 @@
 
                 <!-- Расходы по категориям -->
                 <div class="col-xl-4 col-lg-6 mb-4">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0 text-white">Расходы по категориям</h5>
                         </div>
@@ -66,7 +69,7 @@
 
                 <!-- Кредитные платежи -->
                 <div class="col-xl-4 col-lg-6 mb-4">
-                    <div class="card">
+                    <div class="card h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0 text-white">Кредитные платежи</h5>
                         </div>
@@ -135,70 +138,78 @@
             <div class="row mb-4">
                 <!-- Доходы -->
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card stat-income">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="card-title text-muted mb-1">Доходы (30 дн.)</h6>
-                                    <h4 class="fw-bold text-success">{{ total_income }} ₽</h4>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-arrow-up-circle display-6 text-success opacity-50"></i>
+                    <a href="{% url 'budget:transaction_list' %}?filter=income" class="text-decoration-none">
+                        <div class="card stat-card stat-income clickable-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title text-muted mb-1">Доходы (30 дн.)</h6>
+                                        <h4 class="fw-bold text-success">{{ total_income }} ₽</h4>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-arrow-up-circle display-6 text-success opacity-50"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Расходы -->
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card stat-expense">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="card-title text-muted mb-1">Расходы (30 дн.)</h6>
-                                    <h4 class="fw-bold text-danger">{{ total_expense }} ₽</h4>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-arrow-down-circle display-6 text-danger opacity-50"></i>
+                    <a href="{% url 'budget:transaction_list' %}?filter=expense" class="text-decoration-none">
+                        <div class="card stat-card stat-expense clickable-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title text-muted mb-1">Расходы (30 дн.)</h6>
+                                        <h4 class="fw-bold text-danger">{{ total_expense }} ₽</h4>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-arrow-down-circle display-6 text-danger opacity-50"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Баланс -->
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card stat-balance">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="card-title text-muted mb-1">Баланс (30 дн.)</h6>
-                                    <h4 class="fw-bold text-primary">{{ balance }} ₽</h4>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-wallet2 display-6 text-primary opacity-50"></i>
+                    <a href="{% url 'budget:transaction_list' %}" class="text-decoration-none">
+                        <div class="card stat-card stat-balance clickable-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title text-muted mb-1">Баланс (30 дн.)</h6>
+                                        <h4 class="fw-bold text-primary">{{ balance }} ₽</h4>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-wallet2 display-6 text-primary opacity-50"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
                 <!-- Общий долг -->
                 <div class="col-md-3 mb-3">
-                    <div class="card stat-card stat-debt">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <div class="flex-grow-1">
-                                    <h6 class="card-title text-muted mb-1">Общий долг</h6>
-                                    <h4 class="fw-bold text-warning">{{ total_debt }} ₽</h4>
-                                </div>
-                                <div class="flex-shrink-0">
-                                    <i class="bi bi-credit-card display-6 text-warning opacity-50"></i>
+                    <a href="{% url 'budget:loans_list' %}" class="text-decoration-none">
+                        <div class="card stat-card stat-debt clickable-card">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="card-title text-muted mb-1">Общий долг</h6>
+                                        <h4 class="fw-bold text-warning">{{ total_debt }} ₽</h4>
+                                    </div>
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-credit-card display-6 text-warning opacity-50"></i>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -551,6 +562,54 @@ document.addEventListener('DOMContentLoaded', function() {
     .display-6 {
         font-size: 1.5rem;
     }
+}
+
+/* Выравнивание высоты карточек */
+.equal-height-cards .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.equal-height-cards .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.equal-height-cards .card-body > div {
+    flex: 1;
+}
+
+.col-xl-4 {
+    min-height: 400px;
+}
+
+/* Стили для кликабельных карточек */
+.clickable-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.clickable-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.clickable-card.stat-income:hover {
+    border-left: 4px solid #28a745;
+}
+
+.clickable-card.stat-expense:hover {
+    border-left: 4px solid #dc3545;
+}
+
+.clickable-card.stat-balance:hover {
+    border-left: 4px solid #007bff;
+}
+
+.clickable-card.stat-debt:hover {
+    border-left: 4px solid #ffc107;
 }
 </style>
 {% endblock %}

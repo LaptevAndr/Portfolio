@@ -317,3 +317,42 @@ def delete_loan(request, pk):
         return redirect('budget:loans_list')
     else:
         return render(request, 'budget/loan_confirm_delete.html', {'loan': loan})
+    
+@login_required
+def add_balance(request):
+    """
+    Создание начального баланса через специальную транзакцию
+    """
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
+        description = request.POST.get('description', 'Начальный баланс')
+        
+        if amount:
+            try:
+                #категорию для баланса или находим существующую
+                balance_category, created = Category.objects.get_or_create(
+                    name='Начальный баланс',
+                    defaults={
+                        'type': 'income',
+                        'is_credit_related': False
+                    }
+                )
+                
+                # транзакция баланса
+                balance_transaction = Transaction.objects.create(
+                    user=request.user,
+                    amount=amount,
+                    category=balance_category,
+                    date=now().date(),
+                    description=description
+                )
+                
+                messages.success(request, f'Начальный баланс {amount} ₽ успешно установлен!')
+                return redirect('budget:transaction_list')
+                
+            except Exception as e:
+                messages.error(request, f'Ошибка при создании баланса: {str(e)}')
+        else:
+            messages.error(request, 'Пожалуйста, укажите сумму баланса')
+    
+    return render(request, 'budget/balance_form.html')
