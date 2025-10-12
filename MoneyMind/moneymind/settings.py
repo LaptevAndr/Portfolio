@@ -1,10 +1,9 @@
 from pathlib import Path
-from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY='e5#hjp*7qvdz)jdc8pslerb^px*v!n4r45rr^adl90ic3v=jzo'
-DEBUG=True
 
+SECRET_KEY = 'e5#hjp*7qvdz)jdc8pslerb^px*v!n4r45rr^adl90ic3v=jzo'
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -76,7 +75,6 @@ AUTH_PASSWORD_VALIDATORS = [
         }
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/

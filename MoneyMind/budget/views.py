@@ -12,7 +12,8 @@ from django.contrib import messages
 from .forms import CustomUserCreationForm 
 from datetime import datetime, timedelta
 from django.db import models
-
+from django.db.models import Sum
+from budget.models import Transaction, Loan
 
 
 def home(request):
@@ -208,10 +209,57 @@ def savings_goals(request):
     }
     return render(request, 'budget/savings_goals.html', context)
 
+def calculate_free_money_after_expenses(user):
+    try:
+        # Сумма всех доходов
+        total_income = Transaction.objects.filter(
+            user=user, 
+            category__type='income'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        # Сумма расходов (исключая кредитные платежи, если они есть в транзакциях)
+        total_expenses = Transaction.objects.filter(
+            user=user, 
+            category__type='expense'
+        ).exclude(
+            # Исключаем категории, связанные с кредитами
+            category__name__icontains='кредит'
+        ).exclude(
+            category__name__icontains='займ'
+        ).exclude(
+            category__name__icontains='loan'
+        ).aggregate(Sum('amount'))['amount__sum'] or 0
+        
+        # Ежемесячные платежи по кредитам из модели Loan
+        total_loan_payments = Loan.objects.filter(
+            user=user
+        ).aggregate(Sum('monthly_payment'))['monthly_payment__sum'] or 0
+        
+        # Свободные средства = доходы - расходы - кредитные платежи
+        return total_income - total_expenses - total_loan_payments
+        
+    except Exception as e:
+        print(f"Ошибка расчета свободных средств: {e}")
+        return 0
+    
 @login_required
 def loans_list(request):
     loans = Loan.objects.filter(user=request.user)
-    return render(request, 'budget/loans.html', {'loans': loans})
+    
+    # Вычисляем общую статистику
+    total_debt = sum(loan.remaining_amount for loan in loans)
+    total_monthly_payments = sum(loan.monthly_payment for loan in loans)
+    
+    # Используем функцию расчета свободных средств
+    free_money_after_expenses = calculate_free_money_after_expenses(request.user)
+    
+    context = {
+        'loans': loans,
+        'total_debt': total_debt,
+        'total_monthly_payments': total_monthly_payments,
+        'free_money_after_expenses': free_money_after_expenses,
+    }
+    return render(request, 'budget/loans.html', context)
 
 @login_required
 def add_savings_goal(request):
