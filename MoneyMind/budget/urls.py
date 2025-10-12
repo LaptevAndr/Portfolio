@@ -25,4 +25,7 @@ urlpatterns = [
     path('loans/edit/<int:pk>/', views.edit_loan, name='edit_loan'),
     path('loans/delete/<int:pk>/', views.delete_loan, name='delete_loan'),
     path('balance/add/', views.add_balance, name='add_balance'),
+    # Демо-данные
+    path('create-demo-data/', views.create_demo_data, name='create_demo_data'),
+    path('clear-demo-data/', views.clear_demo_data, name='clear_demo_data'),
 ]

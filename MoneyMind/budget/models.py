@@ -6,6 +6,7 @@ from django.utils.timezone import now
 
 # Модель для категорий доходов/расходов (Еда, Транспорт, Зарплата)
 class Category(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Пользователь')
     name = models.CharField(max_length=100)
     # Тип категории: либо доход ('income'), либо расход ('expense')
     TYPE_CHOICES = (
@@ -17,9 +18,17 @@ class Category(models.Model):
     # Поле для отметки кредитных категорий
     is_credit_related = models.BooleanField(default=False, verbose_name='Связано с кредитами')
 
-    # Метод для красивого отображения объекта в админке
+    # Метод для отображения объекта в админке
     def __str__(self):
-        return f"{self.name} ({self.get_type_display()})" 
+        return f"{self.name} ({self.get_type_display()})"
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'name', 'type'], 
+                name='unique_category_per_user'
+            )
+        ]
 
 # Главная модель — транзакция (любой доход или расход)
 class Transaction(models.Model):

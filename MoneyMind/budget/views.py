@@ -13,15 +13,12 @@ from .forms import CustomUserCreationForm
 from datetime import datetime, timedelta
 from django.db import models
 from django.db.models import Sum
-from budget.models import Transaction, Loan
-
+from budget.models import Category, Transaction, Loan, SavingsGoal
+from django.utils import timezone
+import random
 
 def home(request):
     """Главная страница приложения"""
-    # Если пользователь уже авторизован, перенаправляем его в приложение
-    # if request.user.is_authenticated:
-        # return redirect('budget:transaction_list')
-    
     return render(request, 'budget/home.html')
 
 def register(request):
@@ -42,12 +39,234 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 @login_required
+def create_demo_data(request):
+    """
+    Создание демонстрационных данных для тестирования интерфейса
+    """
+    user = request.user
+    
+    try:
+        # Удаление старых демо-данных этого пользователя
+        Transaction.objects.filter(user=user, description__contains='[Демо]').delete()
+        Loan.objects.filter(user=user, name__contains='[Демо]').delete()
+        SavingsGoal.objects.filter(user=user, name__contains='[Демо]').delete()
+        
+        income_categories = [
+            ('Зарплата', 'income'),
+            ('Фриланс', 'income'),
+            ('Инвестиции', 'income'),
+            ('Подарки', 'income'),
+        ]
+        
+        expense_categories = [
+            ('Продукты', 'expense'),
+            ('Транспорт', 'expense'),
+            ('Коммунальные услуги', 'expense'),
+            ('Развлечения', 'expense'),
+            ('Одежда', 'expense'),
+            ('Здоровье', 'expense'),
+        ]
+        
+        categories_map = {}
+        
+        for name, cat_type in income_categories + expense_categories:
+            category, created = Category.objects.get_or_create(
+                name=name,
+                type=cat_type,
+                defaults={'user': user}
+            )
+            categories_map[name] = category
+        
+        # Создание демо-транзакции (доходы)
+        income_transactions = [
+            (categories_map['Зарплата'], 120000, 'Зарплата за октябрь'),
+            (categories_map['Фриланс'], 35000, 'Проект для клиента'),
+            (categories_map['Инвестиции'], 15000, 'Дивиденды по акциям'),
+        ]
+        
+        for category, amount, description in income_transactions:
+            Transaction.objects.create(
+                user=user,
+                category=category,
+                amount=amount,
+                date=timezone.now().date() - timedelta(days=10),
+                description=f'[Демо] {description}'
+            )
+        
+        # Создание демо-транзакции (расходы)
+        expense_transactions = [
+            (categories_map['Продукты'], 25000, 'Продукты на неделю'),
+            (categories_map['Транспорт'], 8000, 'Бензин и проездной'),
+            (categories_map['Коммунальные услуги'], 12000, 'Квартплата'),
+            (categories_map['Развлечения'], 15000, 'Рестораны и кино'),
+            (categories_map['Одежда'], 18000, 'Новая куртка'),
+            (categories_map['Здоровье'], 5000, 'Визит к врачу'),
+        ]
+        
+        for category, amount, description in expense_transactions:
+            Transaction.objects.create(
+                user=user,
+                category=category,
+                amount=amount,
+                date=timezone.now().date() - timedelta(days=random.randint(1, 30)),
+                description=f'[Демо] {description}'
+            )
+        
+        # Создание демо-кредиты
+        demo_loans = [
+            {
+                'name': '[Демо] Ипотека',
+                'loan_type': 'mortgage',
+                'total_amount': 3500000,
+                'remaining_amount': 3200000,
+                'monthly_payment': 45000,
+                'interest_rate': 7.5,
+                'start_date': timezone.now().date() - timedelta(days=400),
+                'end_date': timezone.now().date() + timedelta(days=3000)
+            },
+            {
+                'name': '[Демо] Автокредит', 
+                'loan_type': 'consumer',
+                'total_amount': 900000,
+                'remaining_amount': 420000,
+                'monthly_payment': 28000,
+                'interest_rate': 11.9,
+                'start_date': timezone.now().date() - timedelta(days=200),
+                'end_date': timezone.now().date() + timedelta(days=600)
+            },
+            {
+                'name': '[Демо] Потребительский кредит',
+                'loan_type': 'consumer', 
+                'total_amount': 300000,
+                'remaining_amount': 120000,
+                'monthly_payment': 15000,
+                'interest_rate': 15.2,
+                'start_date': timezone.now().date() - timedelta(days=100),
+                'end_date': timezone.now().date() + timedelta(days=200)
+            }
+        ]
+        
+        created_loans = []
+        for loan_data in demo_loans:
+            loan = Loan.objects.create(user=user, **loan_data)
+            created_loans.append(loan)
+        
+        # Создание демо-цели накопления
+        SavingsGoal.objects.create(
+            user=user,
+            name='[Демо] Отпуск в Турции',
+            target_amount=150000,
+            current_amount=75000,
+            deadline=timezone.now().date() + timedelta(days=180),
+            priority=8
+        )
+        
+        SavingsGoal.objects.create(
+            user=user,
+            name='[Демо] Новый ноутбук',
+            target_amount=80000,
+            current_amount=45000,
+            deadline=timezone.now().date() + timedelta(days=90),
+            priority=6
+        )
+        
+        SavingsGoal.objects.create(
+            user=user,
+            name='[Демо] Резервный фонд',
+            target_amount=300000,
+            current_amount=120000,
+            deadline=timezone.now().date() + timedelta(days=365),
+            priority=10
+        )
+        
+        # СОЗДАНИЕ ТРАНЗАКЦИЙ ПО КРЕДИТАМ ДЛЯ ГРАФИКА
+        credit_category, _ = Category.objects.get_or_create(
+            name='Кредитные платежи',
+            type='expense',
+            defaults={'user': user, 'is_credit_related': True}
+        )
+        
+        for loan in created_loans:
+            # Создание несколькИХ платежей по каждому кредиту
+            for i in range(3):
+                Transaction.objects.create(
+                    user=user,
+                    category=credit_category,
+                    amount=loan.monthly_payment,
+                    date=timezone.now().date() - timedelta(days=30 * (i + 1)),
+                    description=f'[Демо] Платеж по {loan.name}',
+                    loan=loan
+                )
+        
+        messages.success(request, '🎉 Демонстрационные данные успешно созданы! Теперь вы можете протестировать все функции приложения.')
+        
+    except Exception as e:
+        messages.error(request, f'❌ Ошибка при создании демо-данных: {str(e)}')
+    
+    return redirect('budget:transaction_list')
+
+@login_required
+def clear_demo_data(request):
+    """
+    Очистка демонстрационных данных
+    """
+    user = request.user
+    
+    try:
+        # Получаем количество объектов ДО удаления
+        transactions_count = Transaction.objects.filter(
+            user=user, 
+            description__contains='[Демо]'
+        ).count()
+        
+        loans_count = Loan.objects.filter(
+            user=user,
+            name__contains='[Демо]'
+        ).count()
+        
+        goals_count = SavingsGoal.objects.filter(
+            user=user,
+            name__contains='[Демо]'
+        ).count()
+        
+        # Удаляем демо-данные
+        Transaction.objects.filter(
+            user=user, 
+            description__contains='[Демо]'
+        ).delete()
+        
+        Loan.objects.filter(
+            user=user,
+            name__contains='[Демо]'
+        ).delete()
+        
+        SavingsGoal.objects.filter(
+            user=user,
+            name__contains='[Демо]'
+        ).delete()
+        
+        messages.info(request, f'✅ Демонстрационные данные очищены: {transactions_count} транзакций, {loans_count} кредитов, {goals_count} целей')
+        
+    except Exception as e:
+        messages.error(request, f'❌ Ошибка при очистке данных: {str(e)}')
+    
+    return redirect('budget:transaction_list')
+
+def user_has_demo_data(user):
+    """Проверяет, есть ли у пользователя демо-данные"""
+    return (
+        Transaction.objects.filter(user=user, description__contains='[Демо]').exists() or
+        Loan.objects.filter(user=user, name__contains='[Демо]').exists() or
+        SavingsGoal.objects.filter(user=user, name__contains='[Демо]').exists()
+    )
+
+@login_required
 def transaction_list(request):
     # Фильтрация за последние 30 дней для статистики
-    thirty_days_ago = now().date() - timedelta(days=30)
+    thirty_days_ago = timezone.now().date() - timedelta(days=30)
     
     # Все транзакции для истории
-    all_transactions = Transaction.objects.filter(user=request.user).select_related('category').order_by('-date')
+    all_transactions = Transaction.objects.filter(user=request.user).select_related('category', 'loan').order_by('-date')
     
     # Транзакции за последние 30 дней для статистики
     recent_transactions = all_transactions.filter(date__gte=thirty_days_ago)
@@ -87,33 +306,26 @@ def transaction_list(request):
             'colors': ['#dc3545', '#e74c3c', '#c0392b', '#ff6b6b', '#ee5a24']
         }
 
-    # Диаграмма кредитных платежей за 30 дней
+    # ДИАГРАММА КРЕДИТНЫХ ПЛАТЕЖЕЙ
     credit_payments_data = None
-    credit_transactions = recent_transactions.filter(
-        Q(category__is_credit_related=True) | Q(loan__isnull=False)
-    )
+    user_loans = Loan.objects.filter(user=request.user)
     
-    if credit_transactions.exists():
-        credit_payments_by_loan = credit_transactions.values(
-            'loan__name', 'category__name'
-        ).annotate(total=Sum('amount')).order_by('-total')
-        
-        labels = []
-        values = []
-        for item in credit_payments_by_loan:
-            if item['loan__name']:
-                labels.append(f"{item['loan__name']}")
-            else:
-                labels.append(f"{item['category__name']}")
-            values.append(float(item['total']))
-        
-        if labels and values:
-            credit_payments_data = {
-                'labels': labels,
-                'values': values,
-                'colors': ['#8e44ad', '#9b59b6', '#3498db', '#2980b9']
-            }
+    if user_loans.exists():
 
+        loan_names = []
+        monthly_payments = []
+        colors = ['#8e44ad', '#9b59b6', '#3498db', '#2980b9', '#1abc9c']
+        
+        for i, loan in enumerate(user_loans):
+            loan_names.append(loan.name.replace('[Демо] ', ''))
+            monthly_payments.append(float(loan.monthly_payment))
+        
+        credit_payments_data = {
+            'labels': loan_names,
+            'values': monthly_payments,
+            'colors': colors[:len(loan_names)]
+        }
+        
     # Диаграмма накоплений
     savings_chart_data = None
     savings_goals = SavingsGoal.objects.filter(user=request.user)
@@ -175,6 +387,7 @@ def transaction_list(request):
         'free_money_after_expenses': free_money_after_expenses,
         'free_money_after_savings': free_money_after_savings,
         'period_days': 30,  # Показываем период в шаблоне
+        'user_demo_data_exists': user_has_demo_data(request.user),
     }
     return render(request, 'budget/transaction_list.html', context)
 
@@ -236,7 +449,8 @@ def calculate_free_money_after_expenses(user):
         ).aggregate(Sum('monthly_payment'))['monthly_payment__sum'] or 0
         
         # Свободные средства = доходы - расходы - кредитные платежи
-        return total_income - total_expenses - total_loan_payments
+        free_money = total_income - total_expenses - total_loan_payments
+        return max(free_money, 0)  # Не допускаем отрицательные значения
         
     except Exception as e:
         print(f"Ошибка расчета свободных средств: {e}")
@@ -377,21 +591,22 @@ def add_balance(request):
         
         if amount:
             try:
-                #категорию для баланса или находим существующую
+                # Создаем категорию для баланса или находим существующую
                 balance_category, created = Category.objects.get_or_create(
                     name='Начальный баланс',
+                    user=request.user,  # Добавляем пользователя
                     defaults={
                         'type': 'income',
                         'is_credit_related': False
                     }
                 )
                 
-                # транзакция баланса
+                # Создаем транзакцию баланса
                 balance_transaction = Transaction.objects.create(
                     user=request.user,
                     amount=amount,
                     category=balance_category,
-                    date=now().date(),
+                    date=timezone.now().date(),
                     description=description
                 )
                 
